@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # AgriAI - Smart Farming Dashboard
 
 A comprehensive crop recommendation platform with AI-powered insights, built with Node.js, Express, and Handlebars.
@@ -198,3 +199,6 @@ MIT License - feel free to modify and use for your project.
 ## Support
 
 For questions about implementation or additional features, please refer to the documentation or create an issue in the project repository.
+=======
+# AI-Based-Crop-Recommendation
+>>>>>>> 1615b6a825db54123e438f1d6f6f1184dfba56a4
