@@ -5,7 +5,7 @@ const router = express.Router();
 
 // Root route → views/index.hbs
 router.get("/", (req, res) => {
-  res.render("main", { 
+  res.render("index", { 
     title: "Home", 
     layout: "main" 
   });
