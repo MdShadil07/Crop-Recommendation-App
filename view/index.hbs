@@ -1,6 +1,6 @@
-{{!< layout/layout }}  {{!-- Use layout.hbs from layout folder --}}
+{{!< layouts/main}}  {{!-- Use layout.hbs from layout folder --}}
 {{!-- Main Landing Page Content --}}
-    {{> header }}  
+
         <header class="landing-header">
             <nav class="landing-nav">
                 <div class="nav-brand">
@@ -22,8 +22,8 @@
                     <h1 class="hero-title">Smart Farming with AI</h1>
                     <p class="hero-subtitle">Get personalized crop recommendations, real-time market insights, and expert agricultural advice powered by artificial intelligence.</p>
                     <div class="hero-actions">
-                        <button id="register-farmer-btn" class="btn btn--primary btn--lg">
-                            <i class="fas fa-user"></i> Register as Farmer
+                        <button id="register-farmer-btn" href="signup-page" class="btn btn--primary btn--lg">
+                            <i  class="fas fa-user"></i> Register as Farmer
                         </button>
                         <button id="register-expert-btn" class="btn btn--outline btn--lg">
                             <i class="fas fa-graduation-cap"></i> Register as Expert
@@ -68,5 +68,5 @@
                 </div>
             </section>
         </main>
-        {{> footer }}
+
     

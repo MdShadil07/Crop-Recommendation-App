@@ -1,53 +1,68 @@
 const express = require('express');
 const router = express.Router();
 
-
-
-// Root route → views/index.hbs
+// Root route → Landing page (no sidebar/footer)
 router.get("/", (req, res) => {
   res.render("index", { 
     title: "Home", 
-    layout: "main" 
+    layout: "main",
+    showSidebar: false,  // hide sidebar
+    showFooter: false,
+    showHeader: false   // hide footer
   });
 });
 
-// Dashboard page → views/pages/dashboard.hbs
+router.get("/signup-page", (req, res)=>{
+  res.render("signup-page")
+});
+
+// Dashboard page → show sidebar/footer
 router.get("/dashboard", (req, res) => {
   res.render("pages/dashboard", { 
     title: "Dashboard", 
-    layout: "main" 
+    layout: "main",
+    showSidebar: true,
+    showFooter: true
   });
 });
 
-// Market Trends → views/pages/market-trends.hbs
+// Market Trends
 router.get("/market-trends", (req, res) => {
   res.render("pages/market-trends", { 
     title: "Market Trends", 
-    layout: "main" 
+    layout: "main",
+    showSidebar: true,
+    showFooter: true
   });
 });
 
-// AI Assistant → views/pages/ai-assistant.hbs
+// AI Assistant
 router.get("/ai-assistant", (req, res) => {
   res.render("pages/ai-assistant", { 
     title: "AI Assistant", 
-    layout: "main" 
+    layout: "main",
+    showSidebar: true,
+    showFooter: true
   });
 });
 
-// Farm Diary → views/pages/farm-diary.hbs
+// Farm Diary
 router.get("/farm-diary", (req, res) => {
   res.render("pages/farm-diary", { 
     title: "Farm Diary", 
-    layout: "main" 
+    layout: "main",
+    showSidebar: true,
+    showFooter: true
   });
 });
 
-// Settings → views/pages/setting.hbs
+// Settings
 router.get("/settings", (req, res) => {
   res.render("pages/setting", { 
     title: "Settings", 
-    layout: "main" 
+    layout: "main",
+    showSidebar: true,
+    showFooter: true
   });
 });
 
