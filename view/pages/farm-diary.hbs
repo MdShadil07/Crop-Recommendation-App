@@ -1,0 +1,109 @@
+<section id="farm-diary-page" class="content-page hidden">
+                <div class="page-header">
+                    <h1>Farm Diary</h1>
+                    <p>Track your farming activities and maintain digital records.</p>
+                </div>
+
+                <div class="diary-content">
+                    <div class="farm-selector">
+                        <select class="form-control" id="farm-selector">
+                            <option value="1">Main Farm - Ludhiana, Punjab (5 acres)</option>
+                            <option value="2">Secondary Plot - Amritsar, Punjab (2 acres)</option>
+                        </select>
+                        <button class="btn btn--outline">
+                            <i class="fas fa-plus"></i> Add Farm
+                        </button>
+                    </div>
+
+                    <div class="diary-entries">
+                        <div class="diary-entry">
+                            <div class="entry-date">
+                                <div class="date-day">05</div>
+                                <div class="date-month">Sep</div>
+                            </div>
+                            <div class="entry-content">
+                                <h4>Wheat Sowing Preparation</h4>
+                                <p>Prepared field for wheat sowing. Applied NPK fertilizer as recommended by AI assistant.</p>
+                                <div class="entry-media">
+                                    <div class="media-placeholder">
+                                        <i class="fas fa-image"></i>
+                                    </div>
+                                </div>
+                                <div class="entry-actions">
+                                    <button class="btn btn--outline btn--sm">
+                                        <i class="fas fa-microphone"></i> Voice Note
+                                    </button>
+                                    <button class="btn btn--outline btn--sm">
+                                        <i class="fas fa-camera"></i> Add Photo
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="floating-add-btn" id="add-entry-btn">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Settings Page -->
+            <section id="settings-page" class="content-page hidden">
+                <div class="page-header">
+                    <h1>Settings</h1>
+                    <p>Customize your AgriAI experience.</p>
+                </div>
+
+                <div class="settings-sections">
+                    <div class="settings-section">
+                        <h3>Account Settings</h3>
+                        <div class="setting-item">
+                            <label>Profile Information</label>
+                            <button class="btn btn--outline">Edit Profile</button>
+                        </div>
+                        <div class="setting-item">
+                            <label>Language Preferences</label>
+                            <select class="form-control">
+                                <option>English</option>
+                                <option>हिन्दी</option>
+                                <option>मराठी</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3>Notifications</h3>
+                        <div class="setting-item">
+                            <label>Market Price Alerts</label>
+                            <label class="toggle">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label>Weather Updates</label>
+                            <label class="toggle">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3>Data & Privacy</h3>
+                        <div class="setting-item">
+                            <label>Offline Data Sync</label>
+                            <label class="toggle">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label>Export Farm Data</label>
+                            <button class="btn btn--outline">Export</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>

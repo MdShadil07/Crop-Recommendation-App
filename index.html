@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriAI - Smart Crop Recommendation System</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="manifest" href="#" />
+    <meta name="theme-color" content="#000000">
+</head>
+<body>
+    <!-- Language Selection Modal -->
+    <div id="language-modal" class="modal">
+        <div class="modal-content">
+            <h2><i class="fas fa-globe"></i> Select Language / भाषा चुनें</h2>
+            <div class="language-grid">
+                <button class="language-btn" data-lang="en">
+                    <span class="lang-name">English</span>
+                    <span class="lang-native">English</span>
+                </button>
+                <button class="language-btn" data-lang="hi">
+                    <span class="lang-name">Hindi</span>
+                    <span class="lang-native">हिन्दी</span>
+                </button>
+                <button class="language-btn" data-lang="mr">
+                    <span class="lang-name">Marathi</span>
+                    <span class="lang-native">मराठी</span>
+                </button>
+                <button class="language-btn" data-lang="ta">
+                    <span class="lang-name">Tamil</span>
+                    <span class="lang-native">தமிழ்</span>
+                </button>
+                <button class="language-btn" data-lang="te">
+                    <span class="lang-name">Telugu</span>
+                    <span class="lang-native">తెలుగు</span>
+                </button>
+                <button class="language-btn" data-lang="bn">
+                    <span class="lang-name">Bengali</span>
+                    <span class="lang-native">বাংলা</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Landing Page -->
+    <div id="landing-page" class="page">
+        <header class="landing-header">
+            <nav class="landing-nav">
+                <div class="nav-brand">
+                    <i class="fas fa-seedling"></i>
+                    <span>AgriAI</span>
+                </div>
+                <div class="nav-actions">
+                    <button id="language-btn" class="btn btn--outline">
+                        <i class="fas fa-globe"></i> English
+                    </button>
+                    <button id="login-btn" class="btn btn--primary">Login</button>
+                </div>
+            </nav>
+        </header>
+
+        <main class="landing-main">
+            <section class="hero">
+                <div class="hero-content">
+                    <h1 class="hero-title">Smart Farming with AI</h1>
+                    <p class="hero-subtitle">Get personalized crop recommendations, real-time market insights, and expert agricultural advice powered by artificial intelligence.</p>
+                    <div class="hero-actions">
+                        <button id="register-farmer-btn" class="btn btn--primary btn--lg">
+                            <i class="fas fa-user"></i> Register as Farmer
+                        </button>
+                        <button id="register-expert-btn" class="btn btn--outline btn--lg">
+                            <i class="fas fa-graduation-cap"></i> Register as Expert
+                        </button>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="agricultural-bg">
+                        <i class="fas fa-seedling"></i>
+                        <i class="fas fa-leaf"></i>
+                        <i class="fas fa-sun"></i>
+                        <i class="fas fa-cloud-rain"></i>
+                    </div>
+                </div>
+            </section>
+
+            <section class="features">
+                <div class="container">
+                    <h2>Powerful Features for Modern Farmers</h2>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <i class="fas fa-robot"></i>
+                            <h3>AI Assistant</h3>
+                            <p>24/7 multilingual AI support for crop queries and farming advice</p>
+                        </div>
+                        <div class="feature-card">
+                            <i class="fas fa-chart-line"></i>
+                            <h3>Market Insights</h3>
+                            <p>Real-time crop prices and market trend analysis</p>
+                        </div>
+                        <div class="feature-card">
+                            <i class="fas fa-satellite"></i>
+                            <h3>Soil Analysis</h3>
+                            <p>Advanced soil health monitoring with satellite imagery</p>
+                        </div>
+                        <div class="feature-card">
+                            <i class="fas fa-mobile-alt"></i>
+                            <h3>Offline Mode</h3>
+                            <p>Access essential features even without internet connection</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Main Application -->
+    <div id="main-app" class="page hidden">
+        <!-- Top Navigation -->
+        <header class="app-header">
+            <div class="header-left">
+                <button id="sidebar-toggle" class="btn btn--outline btn--sm">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="app-logo">
+                    <i class="fas fa-seedling"></i>
+                    <span>AgriAI</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="offline-indicator hidden" id="offline-indicator">
+                    <i class="fas fa-wifi-slash"></i>
+                    <span>Offline Mode</span>
+                </div>
+                <button class="btn btn--outline btn--sm" id="sync-btn">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+                <select id="header-language" class="form-control lang-select">
+                    <option value="en">English</option>
+                    <option value="hi">हिन्दी</option>
+                    <option value="mr">मराठी</option>
+                </select>
+                <div class="notification-wrapper">
+                    <button class="notification-btn" id="notification-btn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </button>
+                    <!-- Notification Panel -->
+                    <div class="notification-panel hidden" id="notification-panel">
+                        <div class="notification-header">
+                            <h4>Notifications</h4>
+                            <button class="btn btn--outline btn--sm" id="mark-all-read">Mark all read</button>
+                        </div>
+                        <div class="notification-list">
+                            <div class="notification-item unread">
+                                <div class="notification-icon">
+                                    <i class="fas fa-cloud-rain text-blue"></i>
+                                </div>
+                                <div class="notification-content">
+                                    <h5>Weather Alert</h5>
+                                    <p>Heavy rainfall expected tomorrow. Postpone harvesting.</p>
+                                    <small>2 hours ago</small>
+                                </div>
+                            </div>
+                            <div class="notification-item unread">
+                                <div class="notification-icon">
+                                    <i class="fas fa-chart-line text-green"></i>
+                                </div>
+                                <div class="notification-content">
+                                    <h5>Price Alert</h5>
+                                    <p>Wheat prices increased by 5.8% - ₹2,150/quintal</p>
+                                    <small>4 hours ago</small>
+                                </div>
+                            </div>
+                            <div class="notification-item unread">
+                                <div class="notification-icon">
+                                    <i class="fas fa-seedling text-green"></i>
+                                </div>
+                                <div class="notification-content">
+                                    <h5>Crop Recommendation</h5>
+                                    <p>New recommendations available based on updated soil data</p>
+                                    <small>6 hours ago</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="notification-footer">
+                            <a href="#" class="view-all-link">View all notifications</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-menu">
+                    <button class="profile-btn">
+                        <div class="profile-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar" class="sidebar">
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-page="dashboard">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-page="recommendations">
+                    <i class="fas fa-seedling"></i>
+                    <span>Crop Recommendations</span>
+                </a>
+                <a href="#" class="nav-item" data-page="soil-analysis">
+                    <i class="fas fa-layer-group"></i>
+                    <span>Soil Analysis</span>
+                </a>
+                <a href="#" class="nav-item" data-page="market-trends">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Market Trends</span>
+                </a>
+                <a href="#" class="nav-item" data-page="ai-assistant">
+                    <i class="fas fa-robot"></i>
+                    <span>AI Assistant</span>
+                </a>
+                <a href="#" class="nav-item" data-page="farm-diary">
+                    <i class="fas fa-book"></i>
+                    <span>Farm Diary</span>
+                </a>
+                <a href="#" class="nav-item" data-page="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Dashboard Page -->
+            <section id="dashboard-page" class="content-page">
+                <div class="page-header">
+                    <h1>Dashboard</h1>
+                    <p>Welcome back! Here's your farm overview.</p>
+                </div>
+
+                <div class="dashboard-grid">
+                    <!-- Weather Widget -->
+                    <div class="card weather-card">
+                        <div class="card__body">
+                            <div class="weather-header">
+                                <h3><i class="fas fa-cloud-sun"></i> Weather</h3>
+                                <span class="location">Punjab, India</span>
+                            </div>
+                            <div class="weather-main">
+                                <div class="temperature">28°C</div>
+                                <div class="weather-details">
+                                    <div class="weather-item">
+                                        <i class="fas fa-tint"></i>
+                                        <span>65% Humidity</span>
+                                    </div>
+                                    <div class="weather-item">
+                                        <i class="fas fa-cloud-rain"></i>
+                                        <span>15mm (24h)</span>
+                                    </div>
+                                    <div class="weather-item">
+                                        <i class="fas fa-wind"></i>
+                                        <span>12 km/h</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="weather-forecast">
+                                Partly cloudy with chance of rain
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Soil Health -->
+                    <div class="card soil-card">
+                        <div class="card__body">
+                            <h3><i class="fas fa-layer-group"></i> Soil Health</h3>
+                            <div class="soil-metrics">
+                                <div class="metric">
+                                    <label>pH Level</label>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 65%"></div>
+                                    </div>
+                                    <span>6.5</span>
+                                </div>
+                                <div class="metric">
+                                    <label>Moisture</label>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 45%"></div>
+                                    </div>
+                                    <span>45%</span>
+                                </div>
+                                <div class="metric">
+                                    <label>Nitrogen</label>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 75%"></div>
+                                    </div>
+                                    <span>75%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="card actions-card">
+                        <div class="card__body">
+                            <h3>Quick Actions</h3>
+                            <div class="actions-grid">
+                                <button class="action-btn" data-action="scan">
+                                    <i class="fas fa-camera"></i>
+                                    <span>Scan Field</span>
+                                </button>
+                                <button class="action-btn" data-action="ai">
+                                    <i class="fas fa-robot"></i>
+                                    <span>Ask AI</span>
+                                </button>
+                                <button class="action-btn" data-action="market">
+                                    <i class="fas fa-chart-line"></i>
+                                    <span>Market Rates</span>
+                                </button>
+                                <button class="action-btn" data-action="calendar">
+                                    <i class="fas fa-calendar"></i>
+                                    <span>Crop Calendar</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Recommendations -->
+                    <div class="card recommendations-card">
+                        <div class="card__body">
+                            <h3><i class="fas fa-seedling"></i> Recent Recommendations</h3>
+                            <div class="recommendations-carousel">
+                                <div class="recommendation-item">
+                                    <div class="crop-icon">🌾</div>
+                                    <div class="crop-info">
+                                        <h4>Wheat</h4>
+                                        <p>85% profit margin</p>
+                                        <span class="status status--success">Recommended</span>
+                                    </div>
+                                </div>
+                                <div class="recommendation-item">
+                                    <div class="crop-icon">🍅</div>
+                                    <div class="crop-info">
+                                        <h4>Tomato</h4>
+                                        <p>95% profit margin</p>
+                                        <span class="status status--success">High Demand</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            
+
+            <!-- Market Trends Page -->
+            <section id="market-trends-page" class="content-page hidden">
+                <div class="page-header">
+                    <h1>Market Trends</h1>
+                    <p>Real-time market prices and commodity trends.</p>
+                </div>
+
+                <div class="market-overview">
+                    <div class="price-cards">
+                        <div class="price-card">
+                            <h3>Wheat</h3>
+                            <div class="price">₹2,150</div>
+                            <div class="unit">per quintal</div>
+                            <div class="change positive">+2.5%</div>
+                        </div>
+                        <div class="price-card">
+                            <h3>Rice</h3>
+                            <div class="price">₹2,800</div>
+                            <div class="unit">per quintal</div>
+                            <div class="change negative">-1.2%</div>
+                        </div>
+                        <div class="price-card">
+                            <h3>Cotton</h3>
+                            <div class="price">₹6,200</div>
+                            <div class="unit">per quintal</div>
+                            <div class="change positive">+5.8%</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AI Assistant Page -->
+            <section id="ai-assistant-page" class="content-page hidden">
+                <div class="page-header">
+                    <h1>AI Assistant</h1>
+                    <p>Get instant answers to your farming questions.</p>
+                </div>
+
+                <div class="chat-container">
+                    <div class="chat-messages" id="chat-messages">
+                        <div class="message bot-message">
+                            <div class="message-avatar">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="message-content">
+                                <p>Hello! I'm your AI farming assistant. How can I help you today?</p>
+                                <small>Just now</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chat-suggestions">
+                        <button class="suggestion-chip">What crop should I plant this season?</button>
+                        <button class="suggestion-chip">How to treat wheat rust disease?</button>
+                        <button class="suggestion-chip">Current market rates for vegetables</button>
+                    </div>
+
+                    <div class="chat-input">
+                        <button class="voice-btn" id="voice-btn">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                        <input type="text" placeholder="Type your question..." id="chat-input" class="form-control">
+                        <button class="send-btn" id="send-btn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                        <button class="camera-btn" id="camera-btn">
+                            <i class="fas fa-camera"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Farm Diary Page -->
+            <section id="farm-diary-page" class="content-page hidden">
+                <div class="page-header">
+                    <h1>Farm Diary</h1>
+                    <p>Track your farming activities and maintain digital records.</p>
+                </div>
+
+                <div class="diary-content">
+                    <div class="farm-selector">
+                        <select class="form-control" id="farm-selector">
+                            <option value="1">Main Farm - Ludhiana, Punjab (5 acres)</option>
+                            <option value="2">Secondary Plot - Amritsar, Punjab (2 acres)</option>
+                        </select>
+                        <button class="btn btn--outline">
+                            <i class="fas fa-plus"></i> Add Farm
+                        </button>
+                    </div>
+
+                    <div class="diary-entries">
+                        <div class="diary-entry">
+                            <div class="entry-date">
+                                <div class="date-day">05</div>
+                                <div class="date-month">Sep</div>
+                            </div>
+                            <div class="entry-content">
+                                <h4>Wheat Sowing Preparation</h4>
+                                <p>Prepared field for wheat sowing. Applied NPK fertilizer as recommended by AI assistant.</p>
+                                <div class="entry-media">
+                                    <div class="media-placeholder">
+                                        <i class="fas fa-image"></i>
+                                    </div>
+                                </div>
+                                <div class="entry-actions">
+                                    <button class="btn btn--outline btn--sm">
+                                        <i class="fas fa-microphone"></i> Voice Note
+                                    </button>
+                                    <button class="btn btn--outline btn--sm">
+                                        <i class="fas fa-camera"></i> Add Photo
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="floating-add-btn" id="add-entry-btn">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Settings Page -->
+            <section id="settings-page" class="content-page hidden">
+                <div class="page-header">
+                    <h1>Settings</h1>
+                    <p>Customize your AgriAI experience.</p>
+                </div>
+
+                <div class="settings-sections">
+                    <div class="settings-section">
+                        <h3>Account Settings</h3>
+                        <div class="setting-item">
+                            <label>Profile Information</label>
+                            <button class="btn btn--outline">Edit Profile</button>
+                        </div>
+                        <div class="setting-item">
+                            <label>Language Preferences</label>
+                            <select class="form-control">
+                                <option>English</option>
+                                <option>हिन्दी</option>
+                                <option>मराठी</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3>Notifications</h3>
+                        <div class="setting-item">
+                            <label>Market Price Alerts</label>
+                            <label class="toggle">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label>Weather Updates</label>
+                            <label class="toggle">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3>Data & Privacy</h3>
+                        <div class="setting-item">
+                            <label>Offline Data Sync</label>
+                            <label class="toggle">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label>Export Farm Data</label>
+                            <button class="btn btn--outline">Export</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Floating Chat Button -->
+    <button id="floating-chat" class="floating-chat-btn hidden">
+        <i class="fas fa-robot"></i>
+    </button>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>

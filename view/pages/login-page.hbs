@@ -1,0 +1,905 @@
+<!-- Modern Login Page for Farmers & Exporters -->
+<div class="auth-container">
+  <!-- Animated Background -->
+  <div class="auth-bg">
+    <div class="floating-icons">
+      <i class="fas fa-seedling floating-icon" style="--delay: 0s; --x: 10%; --y: 20%;"></i>
+      <i class="fas fa-tractor floating-icon" style="--delay: 2s; --x: 85%; --y: 15%;"></i>
+      <i class="fas fa-leaf floating-icon" style="--delay: 1s; --x: 15%; --y: 75%;"></i>
+      <i class="fas fa-wheat-awk floating-icon" style="--delay: 3s; --x: 80%; --y: 70%;"></i>
+      <i class="fas fa-apple-alt floating-icon" style="--delay: 1.5s; --x: 70%; --y: 30%;"></i>
+      <i class="fas fa-carrot floating-icon" style="--delay: 2.5s; --x: 25%; --y: 45%;"></i>
+      <i class="fas fa-sun floating-icon" style="--delay: 3.5s; --x: 90%; --y: 85%;"></i>
+      <i class="fas fa-cloud-rain floating-icon" style="--delay: 0.5s; --x: 5%; --y: 60%;"></i>
+    </div>
+  </div>
+
+  <div class="container-fluid h-100">
+    <div class="row h-100 align-items-center">
+      <!-- Left Side - Hero Content -->
+      <div class="col-lg-7 col-md-6 d-none d-md-block">
+        <div class="auth-hero">
+          <div class="hero-content">
+            <!-- Logo & Branding -->
+            <div class="brand-section mb-5">
+              <div class="d-flex align-items-center justify-content-center mb-4">
+                <div class="brand-icon">
+                  <i class="fas fa-seedling"></i>
+                </div>
+                <div class="brand-text">
+                  <h1 class="brand-name">CropWise</h1>
+                  <p class="brand-tagline">Smart Farming Solutions</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Features Showcase -->
+            <div class="features-showcase">
+              <h2 class="hero-title mb-4">
+                Revolutionizing Agriculture with AI
+              </h2>
+              <p class="hero-subtitle mb-5">
+                Join thousands of farmers and exporters who trust CropWise for intelligent 
+                crop recommendations, market insights, and sustainable farming practices.
+              </p>
+
+              <div class="feature-highlights">
+                <div class="feature-item" data-aos="fade-up" data-aos-delay="100">
+                  <div class="feature-icon">
+                    <i class="fas fa-robot"></i>
+                  </div>
+                  <div class="feature-content">
+                    <h4>AI-Powered Recommendations</h4>
+                    <p>Get personalized crop suggestions based on soil, climate, and market data</p>
+                  </div>
+                </div>
+
+                <div class="feature-item" data-aos="fade-up" data-aos-delay="200">
+                  <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                  </div>
+                  <div class="feature-content">
+                    <h4>Real-Time Market Trends</h4>
+                    <p>Stay updated with commodity prices and market demand forecasts</p>
+                  </div>
+                </div>
+
+                <div class="feature-item" data-aos="fade-up" data-aos-delay="300">
+                  <div class="feature-icon">
+                    <i class="fas fa-cloud-sun"></i>
+                  </div>
+                  <div class="feature-content">
+                    <h4>Weather Intelligence</h4>
+                    <p>Access accurate weather forecasts tailored for agricultural planning</p>
+                  </div>
+                </div>
+
+                <div class="feature-item" data-aos="fade-up" data-aos-delay="400">
+                  <div class="feature-icon">
+                    <i class="fas fa-leaf"></i>
+                  </div>
+                  <div class="feature-content">
+                    <h4>Sustainable Practices</h4>
+                    <p>Implement eco-friendly farming methods for better yields and soil health</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Stats Section -->
+              <div class="stats-section mt-5" data-aos="fade-up" data-aos-delay="500">
+                <div class="row text-center">
+                  <div class="col-4">
+                    <div class="stat-item">
+                      <h3 class="stat-number">10K+</h3>
+                      <p class="stat-label">Active Farmers</p>
+                    </div>
+                  </div>
+                  <div class="col-4">
+                    <div class="stat-item">
+                      <h3 class="stat-number">95%</h3>
+                      <p class="stat-label">Accuracy Rate</p>
+                    </div>
+                  </div>
+                  <div class="col-4">
+                    <div class="stat-item">
+                      <h3 class="stat-number">500+</h3>
+                      <p class="stat-label">Crop Varieties</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Side - Login Form -->
+      <div class="col-lg-5 col-md-6 col-12">
+        <div class="auth-form-container">
+          <div class="auth-card">
+            <div class="auth-header text-center mb-4">
+              <!-- Mobile Logo -->
+              <div class="d-md-none mb-4">
+                <div class="d-flex align-items-center justify-content-center">
+                  <div class="brand-icon-sm">
+                    <i class="fas fa-seedling"></i>
+                  </div>
+                  <div class="brand-text-sm">
+                    <h2 class="brand-name-sm">CropWise</h2>
+                  </div>
+                </div>
+              </div>
+
+              <h2 class="auth-title">Welcome Back</h2>
+              <p class="auth-subtitle">Sign in to your farming dashboard</p>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="auth-form">
+              <!-- User Type Selection -->
+              <div class="form-group mb-4">
+                <label class="form-label">
+                  <i class="fas fa-user-tag me-2 text-primary"></i>
+                  I am a
+                </label>
+                <div class="user-type-selector">
+                  <input type="radio" id="farmer" name="userType" value="farmer" checked>
+                  <label for="farmer" class="user-type-card">
+                    <div class="user-type-icon">
+                      <i class="fas fa-tractor"></i>
+                    </div>
+                    <div class="user-type-content">
+                      <h4>Farmer</h4>
+                      <p>Grow crops, manage fields</p>
+                    </div>
+                  </label>
+
+                  <input type="radio" id="exporter" name="userType" value="exporter">
+                  <label for="exporter" class="user-type-card">
+                    <div class="user-type-icon">
+                      <i class="fas fa-shipping-fast"></i>
+                    </div>
+                    <div class="user-type-content">
+                      <h4>Exporter</h4>
+                      <p>Trade agricultural products</p>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Email/Phone Input -->
+              <div class="form-group mb-4">
+                <label for="loginIdentifier" class="form-label">
+                  <i class="fas fa-envelope me-2 text-primary"></i>
+                  Email or Phone Number
+                </label>
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="fas fa-user text-success"></i>
+                  </span>
+                  <input type="text" 
+                         class="form-control" 
+                         id="loginIdentifier" 
+                         placeholder="Enter your email or phone number"
+                         required>
+                </div>
+              </div>
+
+              <!-- Password Input -->
+              <div class="form-group mb-4">
+                <label for="loginPassword" class="form-label">
+                  <i class="fas fa-lock me-2 text-primary"></i>
+                  Password
+                </label>
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="fas fa-key text-success"></i>
+                  </span>
+                  <input type="password" 
+                         class="form-control" 
+                         id="loginPassword" 
+                         placeholder="Enter your password"
+                         required>
+                  <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Remember Me & Forgot Password -->
+              <div class="form-group d-flex justify-content-between align-items-center mb-4">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="rememberMe">
+                  <label class="form-check-label" for="rememberMe">
+                    Remember me
+                  </label>
+                </div>
+                <a href="#forgot-password" class="forgot-password-link">
+                  <i class="fas fa-question-circle me-1"></i>
+                  Forgot Password?
+                </a>
+              </div>
+
+              <!-- Login Button -->
+              <button type="submit" class="btn btn-primary btn-lg w-100 mb-4">
+                <i class="fas fa-sign-in-alt me-2"></i>
+                <span class="btn-text">Sign In</span>
+                <div class="btn-loader d-none">
+                  <i class="fas fa-spinner fa-spin"></i>
+                </div>
+              </button>
+
+              <!-- Divider -->
+              <div class="divider mb-4">
+                <span>or continue with</span>
+              </div>
+
+              <!-- Social Login Options -->
+              <div class="social-login mb-4">
+                <button type="button" class="btn btn-outline-secondary social-btn">
+                  <i class="fab fa-google text-danger"></i>
+                  <span>Google</span>
+                </button>
+                <button type="button" class="btn btn-outline-secondary social-btn">
+                  <i class="fab fa-facebook text-primary"></i>
+                  <span>Facebook</span>
+                </button>
+                <button type="button" class="btn btn-outline-secondary social-btn">
+                  <i class="fas fa-phone text-success"></i>
+                  <span>Phone</span>
+                </button>
+              </div>
+
+              <!-- Sign Up Link -->
+              <div class="text-center">
+                <p class="signup-link">
+                  New to CropWise? 
+                  <a href="#signup" id="showSignup">
+                    <i class="fas fa-user-plus me-1"></i>
+                    Create Account
+                  </a>
+                </p>
+              </div>
+            </form>
+
+            <!-- Features Summary for Mobile -->
+            <div class="d-md-none mt-4">
+              <div class="mobile-features">
+                <h5 class="text-center mb-3">Why Choose CropWise?</h5>
+                <div class="row text-center">
+                  <div class="col-3">
+                    <i class="fas fa-robot text-primary mb-2"></i>
+                    <p class="small">AI Powered</p>
+                  </div>
+                  <div class="col-3">
+                    <i class="fas fa-chart-line text-success mb-2"></i>
+                    <p class="small">Market Data</p>
+                  </div>
+                  <div class="col-3">
+                    <i class="fas fa-cloud-sun text-info mb-2"></i>
+                    <p class="small">Weather</p>
+                  </div>
+                  <div class="col-3">
+                    <i class="fas fa-leaf text-success mb-2"></i>
+                    <p class="small">Sustainable</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Language Selector (Fixed Position) -->
+<div class="language-selector-fixed">
+  <button class="btn btn-outline-secondary btn-sm language-toggle" data-bs-toggle="dropdown">
+    <i class="fas fa-globe me-2"></i>
+    <span>English</span>
+    <i class="fas fa-chevron-down ms-2"></i>
+  </button>
+  <ul class="dropdown-menu">
+    <li><a class="dropdown-item" href="#" data-lang="en">🇺🇸 English</a></li>
+    <li><a class="dropdown-item" href="#" data-lang="hi">🇮🇳 हिंदी</a></li>
+    <li><a class="dropdown-item" href="#" data-lang="mr">🇮🇳 मराठी</a></li>
+    <li><a class="dropdown-item" href="#" data-lang="ta">🇮🇳 தமிழ்</a></li>
+    <li><a class="dropdown-item" href="#" data-lang="te">🇮🇳 తెలుగు</a></li>
+    <li><a class="dropdown-item" href="#" data-lang="bn">🇮🇳 বাংলা</a></li>
+  </ul>
+</div>
+
+<style>
+/* Login Page Styles */
+.auth-container {
+  min-height: 100vh;
+  position: relative;
+  background: var(--color-background);
+  overflow: hidden;
+}
+
+/* Animated Background */
+.auth-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--color-charcoal-700) 0%, var(--color-charcoal-800) 100%);
+  z-index: -1;
+}
+
+.floating-icons {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.floating-icon {
+  position: absolute;
+  font-size: 2rem;
+  color: var(--color-teal-500);
+  opacity: 0.1;
+  animation: float 6s ease-in-out infinite;
+  animation-delay: var(--delay);
+  left: var(--x);
+  top: var(--y);
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.1; }
+  25% { opacity: 0.2; }
+  50% { transform: translateY(-20px) rotate(5deg); opacity: 0.3; }
+  75% { opacity: 0.2; }
+}
+
+/* Hero Section */
+.auth-hero {
+  padding: 2rem;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-content {
+  max-width: 600px;
+}
+
+/* Brand Section */
+.brand-section {
+  text-align: center;
+}
+
+.brand-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, var(--color-teal-500), var(--color-teal-300));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.brand-icon i {
+  font-size: 2.5rem;
+  color: white;
+}
+
+.brand-name {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+  font-family: var(--font-family-base);
+}
+
+.brand-tagline {
+  color: var(--color-text-secondary);
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+/* Mobile Brand */
+.brand-icon-sm {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, var(--color-teal-500), var(--color-teal-300));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+}
+
+.brand-icon-sm i {
+  font-size: 1.5rem;
+  color: white;
+}
+
+.brand-name-sm {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+}
+
+/* Hero Content */
+.hero-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--color-text);
+  background: linear-gradient(135deg, var(--color-teal-300), var(--color-teal-500));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.2;
+}
+
+.hero-subtitle {
+  font-size: 1.1rem;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+/* Feature Highlights */
+.feature-highlights {
+  margin: 3rem 0;
+}
+
+.feature-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  backdrop-filter: var(--glass-blur);
+  transition: all 0.3s ease;
+}
+
+.feature-item:hover {
+  transform: translateX(10px);
+  border-color: var(--color-teal-500);
+  box-shadow: 0 10px 30px rgba(var(--color-teal-500-rgb), 0.2);
+}
+
+.feature-icon {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, var(--color-teal-500), var(--color-teal-300));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1.5rem;
+  flex-shrink: 0;
+}
+
+.feature-icon i {
+  font-size: 1.5rem;
+  color: white;
+}
+
+.feature-content h4 {
+  color: var(--color-text);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.feature-content p {
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Stats Section */
+.stats-section {
+  padding: 2rem;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  backdrop-filter: var(--glass-blur);
+}
+
+.stat-item {
+  padding: 1rem;
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-teal-300);
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* Auth Form Container */
+.auth-form-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem 1rem;
+}
+
+.auth-card {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 450px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* Auth Header */
+.auth-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 0.5rem;
+}
+
+.auth-subtitle {
+  color: var(--color-text-secondary);
+  margin-bottom: 0;
+}
+
+/* User Type Selector */
+.user-type-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.user-type-selector input[type="radio"] {
+  display: none;
+}
+
+.user-type-card {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  background: var(--glass-bg);
+  border: 2px solid var(--glass-border);
+  border-radius: var(--radius-base);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  flex-direction: column;
+}
+
+.user-type-card:hover {
+  border-color: var(--color-teal-500);
+  background: rgba(var(--color-teal-500-rgb), 0.05);
+}
+
+.user-type-selector input[type="radio"]:checked + .user-type-card {
+  border-color: var(--color-teal-500);
+  background: rgba(var(--color-teal-500-rgb), 0.1);
+  box-shadow: 0 0 0 2px rgba(var(--color-teal-500-rgb), 0.2);
+}
+
+.user-type-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--color-teal-500), var(--color-teal-300));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.user-type-icon i {
+  color: white;
+  font-size: 1.2rem;
+}
+
+.user-type-content h4 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 0.25rem;
+}
+
+.user-type-content p {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+/* Form Elements */
+.form-label {
+  font-weight: 500;
+  color: var(--color-text);
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.form-label i {
+  color: var(--color-teal-500);
+}
+
+.input-group-text {
+  background: var(--glass-bg);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+}
+
+.form-control {
+  background: var(--glass-bg);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  transition: all 0.3s ease;
+}
+
+.form-control:focus {
+  background: var(--glass-bg);
+  border-color: var(--color-teal-500);
+  box-shadow: 0 0 0 2px rgba(var(--color-teal-500-rgb), 0.2);
+  color: var(--color-text);
+}
+
+.form-control::placeholder {
+  color: var(--color-text-secondary);
+}
+
+/* Buttons */
+.btn-primary {
+  background: linear-gradient(135deg, var(--color-teal-500), var(--color-teal-600));
+  border: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--color-teal-600), var(--color-teal-700));
+  transform: translateY(-1px);
+  box-shadow: 0 5px 15px rgba(var(--color-teal-500-rgb), 0.3);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-loader {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Links */
+.forgot-password-link {
+  color: var(--color-teal-500);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+}
+
+.forgot-password-link:hover {
+  color: var(--color-teal-300);
+}
+
+.signup-link {
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.signup-link a {
+  color: var(--color-teal-500);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.signup-link a:hover {
+  color: var(--color-teal-300);
+}
+
+/* Divider */
+.divider {
+  position: relative;
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--color-border);
+}
+
+.divider span {
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  padding: 0 1rem;
+  font-size: 0.9rem;
+  position: relative;
+}
+
+/* Social Login */
+.social-login {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.social-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem 0.5rem;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--color-text);
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.social-btn:hover {
+  background: rgba(var(--color-teal-500-rgb), 0.05);
+  border-color: var(--color-teal-500);
+  color: var(--color-text);
+  transform: translateY(-1px);
+}
+
+.social-btn i {
+  font-size: 1.2rem;
+  margin-bottom: 0.25rem;
+}
+
+.social-btn span {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+/* Mobile Features */
+.mobile-features {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-base);
+  padding: 1rem;
+  backdrop-filter: var(--glass-blur);
+}
+
+.mobile-features h5 {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.mobile-features i {
+  font-size: 1.5rem;
+  display: block;
+}
+
+.mobile-features p {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+/* Language Selector */
+.language-selector-fixed {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1000;
+}
+
+.language-toggle {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--color-text);
+  backdrop-filter: var(--glass-blur);
+  font-size: 0.8rem;
+}
+
+.language-toggle:hover {
+  background: rgba(var(--color-teal-500-rgb), 0.1);
+  border-color: var(--color-teal-500);
+  color: var(--color-text);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .auth-card {
+    margin: 1rem;
+    padding: 2rem 1.5rem;
+  }
+  
+  .hero-title {
+    font-size: 2rem;
+  }
+  
+  .brand-name {
+    font-size: 2rem;
+  }
+  
+  .feature-item {
+    margin-bottom: 1rem;
+    padding: 1rem;
+  }
+  
+  .feature-item:hover {
+    transform: none;
+  }
+  
+  .stats-section {
+    padding: 1rem;
+  }
+  
+  .social-login {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .social-btn {
+    flex-direction: row;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  
+  .social-btn i {
+    margin-bottom: 0;
+  }
+}
+
+/* Form Validation States */
+.form-control.is-invalid {
+  border-color: var(--color-error);
+  box-shadow: 0 0 0 2px rgba(var(--color-error-rgb), 0.2);
+}
+
+.form-control.is-valid {
+  border-color: var(--color-success);
+  box-shadow: 0 0 0 2px rgba(var(--color-success-rgb), 0.2);
+}
+
+/* Loading State */
+.btn-primary.loading .btn-text {
+  opacity: 0.7;
+}
+
+.btn-primary.loading .btn-loader {
+  display: block;
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .floating-icon,
+  .feature-item,
+  .btn-primary {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .auth-card,
+  .feature-item,
+  .user-type-card {
+    border-width: 2px;
+  }
+}
+</style>

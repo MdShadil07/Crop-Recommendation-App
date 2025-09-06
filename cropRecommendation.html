@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crop Recommendation</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="manifest" href="#" />
+  <meta name="theme-color" content="#000000">
+</head>
+<body>
+  <!-- Crop Recommendations Page -->
+  <section id="recommendations-page" class="content-page">
+    <div class="page-header">
+      <h1>Crop Recommendations</h1>
+      <p>AI-powered crop suggestions based on your soil and market conditions.</p>
+    </div>
+
+    <div class="recommendations-filters">
+      <div class="filter-group">
+        <label>Season</label>
+        <select class="form-control" id="season-filter">
+          <option value="">All Seasons</option>
+          <option value="kharif">Kharif</option>
+          <option value="rabi">Rabi</option>
+          <option value="zaid">Zaid</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Profit Margin</label>
+        <select class="form-control" id="profit-filter">
+          <option value="">All</option>
+          <option value="high">High (&gt;80%)</option>
+          <option value="medium">Medium (60-80%)</option>
+          <option value="low">Low (&lt;60%)</option>
+        </select>
+      </div>
+      <button class="btn btn--primary" id="apply-filters">
+        <i class="fas fa-filter"></i> Apply Filters
+      </button>
+    </div>
+
+    <div class="crops-grid" id="crops-grid">
+      <!-- Crop cards will be dynamically populated -->
+    </div>
+  </section>
+
+  <!-- Soil Analysis Page (kept hidden initially) -->
+  <section id="soil-analysis-page" class="content-page hidden">
+    <div class="page-header">
+      <h1>Soil Analysis</h1>
+      <p>Comprehensive soil health monitoring and satellite imagery analysis.</p>
+    </div>
+
+    <div class="soil-dashboard">
+      <div class="soil-meters">
+        <div class="soil-meter">
+          <h3>pH Level</h3>
+          <div class="meter-circle">
+            <div class="meter-value">6.5</div>
+          </div>
+          <div class="meter-status good">Optimal</div>
+        </div>
+        <div class="soil-meter">
+          <h3>Moisture</h3>
+          <div class="meter-circle">
+            <div class="meter-value">45%</div>
+          </div>
+          <div class="meter-status moderate">Moderate</div>
+        </div>
+        <div class="soil-meter">
+          <h3>Organic Matter</h3>
+          <div class="meter-circle">
+            <div class="meter-value">3.2%</div>
+          </div>
+          <div class="meter-status good">Good</div>
+        </div>
+      </div>
+
+      <div class="satellite-view">
+        <h3><i class="fas fa-satellite"></i> Satellite View</h3>
+        <div class="satellite-placeholder">
+          <i class="fas fa-map"></i>
+          <p>Satellite imagery loading...</p>
+        </div>
+      </div>
+
+      <div class="nutrient-analysis">
+        <h3>Nutrient Levels</h3>
+        <div class="nutrient-bars">
+          <div class="nutrient-bar">
+            <label>Nitrogen (N)</label>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 75%"></div>
+            </div>
+            <span>75%</span>
+          </div>
+          <div class="nutrient-bar">
+            <label>Phosphorus (P)</label>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 60%"></div>
+            </div>
+            <span>60%</span>
+          </div>
+          <div class="nutrient-bar">
+            <label>Potassium (K)</label>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 80%"></div>
+            </div>
+            <span>80%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Dummy crop data (replace with real API/DB data later)
+    const appData = {
+      crops: [
+        {
+          id: 1,
+          name: "Wheat",
+          hindi_name: "गेहूँ",
+          icon: "🌾",
+          profit_margin: 85,
+          yield_prediction: "3 tons/acre",
+          market_demand: "High",
+          sustainability_score: "A+",
+          season: "Rabi",
+          soil_ph: "6.0 - 7.5",
+          water_requirement: "Medium"
+        },
+        {
+          id: 2,
+          name: "Rice",
+          hindi_name: "चावल",
+          icon: "🍚",
+          profit_margin: 70,
+          yield_prediction: "2.5 tons/acre",
+          market_demand: "Medium",
+          sustainability_score: "B",
+          season: "Kharif",
+          soil_ph: "5.5 - 6.5",
+          water_requirement: "High"
+        }
+      ]
+    };
+
+    // Crop Recommendations
+    function loadCropRecommendations() {
+      const cropsGrid = document.getElementById('crops-grid');
+      cropsGrid.innerHTML = '';
+
+      appData.crops.forEach(crop => {
+        const cropCard = createCropCard(crop);
+        cropsGrid.appendChild(cropCard);
+      });
+    }
+
+    function createCropCard(crop) {
+      const card = document.createElement('div');
+      card.className = 'crop-card card';
+
+      const sustainabilityClass = crop.sustainability_score
+        .toLowerCase()
+        .replace('+', '')
+        .replace('-', '');
+
+      card.innerHTML = `
+        <div class="card__body">
+          <div class="crop-header">
+            <div>
+              <h3 class="crop-name">${crop.name}</h3>
+              <p class="crop-hindi">${crop.hindi_name}</p>
+            </div>
+            <div class="crop-icon-large">${crop.icon}</div>
+          </div>
+
+          <div class="crop-metrics">
+            <div class="crop-metric">
+              <div class="metric-value">${crop.profit_margin}%</div>
+              <div class="metric-label">Profit Margin</div>
+            </div>
+            <div class="crop-metric">
+              <div class="metric-value">${crop.yield_prediction}</div>
+              <div class="metric-label">Expected Yield</div>
+            </div>
+            <div class="crop-metric">
+              <div class="metric-value">${crop.market_demand}</div>
+              <div class="metric-label">Market Demand</div>
+            </div>
+            <div class="crop-metric">
+              <div class="metric-value">
+                <span class="sustainability-score ${sustainabilityClass}">
+                  ${crop.sustainability_score}
+                </span>
+              </div>
+              <div class="metric-label">Sustainability</div>
+            </div>
+          </div>
+
+          <div class="crop-details">
+            <p><strong>Season:</strong> ${crop.season}</p>
+            <p><strong>Soil pH:</strong> ${crop.soil_ph}</p>
+            <p><strong>Water Need:</strong> ${crop.water_requirement}</p>
+          </div>
+
+          <button class="btn btn--primary btn--full-width" onclick="selectCrop(${crop.id})">
+            <i class="fas fa-seedling"></i> Select This Crop
+          </button>
+        </div>
+      `;
+
+      return card;
+    }
+
+    function selectCrop(cropId) {
+      const crop = appData.crops.find(c => c.id === cropId);
+      alert(`${crop.name} selected for planting recommendation!`);
+    }
+
+    function applyFilters() {
+      const seasonFilter = document.getElementById('season-filter').value;
+      const profitFilter = document.getElementById('profit-filter').value;
+
+      let filteredCrops = appData.crops;
+
+      if (seasonFilter) {
+        filteredCrops = filteredCrops.filter(crop =>
+          crop.season.toLowerCase().includes(seasonFilter.toLowerCase())
+        );
+      }
+
+      if (profitFilter) {
+        switch (profitFilter) {
+          case 'high':
+            filteredCrops = filteredCrops.filter(crop => crop.profit_margin > 80);
+            break;
+          case 'medium':
+            filteredCrops = filteredCrops.filter(crop => crop.profit_margin >= 60 && crop.profit_margin <= 80);
+            break;
+          case 'low':
+            filteredCrops = filteredCrops.filter(crop => crop.profit_margin < 60);
+            break;
+        }
+      }
+
+      const cropsGrid = document.getElementById('crops-grid');
+      cropsGrid.innerHTML = '';
+
+      filteredCrops.forEach(crop => {
+        const cropCard = createCropCard(crop);
+        cropsGrid.appendChild(cropCard);
+      });
+
+      alert(`Found ${filteredCrops.length} crops matching your criteria`);
+    }
+
+    // Run when page loads
+    window.onload = () => {
+      loadCropRecommendations();
+      document.getElementById("apply-filters").addEventListener("click", applyFilters);
+    };
+  </script>
+</body>
+</html>

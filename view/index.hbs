@@ -1,0 +1,72 @@
+{{!< layout/layout }}  {{!-- Use layout.hbs from layout folder --}}
+{{!-- Main Landing Page Content --}}
+    {{> header }}  
+        <header class="landing-header">
+            <nav class="landing-nav">
+                <div class="nav-brand">
+                    <i class="fas fa-seedling"></i>
+                    <span>AgriAI</span>
+                </div>
+                <div class="nav-actions">
+                    <button id="language-btn" class="btn btn--outline">
+                        <i class="fas fa-globe"></i> English
+                    </button>
+                    <button id="login-btn" class="btn btn--primary">Login</button>
+                </div>
+            </nav>
+        </header>
+
+        <main class="landing-main">
+            <section class="hero">
+                <div class="hero-content">
+                    <h1 class="hero-title">Smart Farming with AI</h1>
+                    <p class="hero-subtitle">Get personalized crop recommendations, real-time market insights, and expert agricultural advice powered by artificial intelligence.</p>
+                    <div class="hero-actions">
+                        <button id="register-farmer-btn" class="btn btn--primary btn--lg">
+                            <i class="fas fa-user"></i> Register as Farmer
+                        </button>
+                        <button id="register-expert-btn" class="btn btn--outline btn--lg">
+                            <i class="fas fa-graduation-cap"></i> Register as Expert
+                        </button>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="agricultural-bg">
+                        <i class="fas fa-seedling"></i>
+                        <i class="fas fa-leaf"></i>
+                        <i class="fas fa-sun"></i>
+                        <i class="fas fa-cloud-rain"></i>
+                    </div>
+                </div>
+            </section>
+
+            <section class="features">
+                <div class="container">
+                    <h2>Powerful Features for Modern Farmers</h2>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <i class="fas fa-robot"></i>
+                            <h3>AI Assistant</h3>
+                            <p>24/7 multilingual AI support for crop queries and farming advice</p>
+                        </div>
+                        <div class="feature-card">
+                            <i class="fas fa-chart-line"></i>
+                            <h3>Market Insights</h3>
+                            <p>Real-time crop prices and market trend analysis</p>
+                        </div>
+                        <div class="feature-card">
+                            <i class="fas fa-satellite"></i>
+                            <h3>Soil Analysis</h3>
+                            <p>Advanced soil health monitoring with satellite imagery</p>
+                        </div>
+                        <div class="feature-card">
+                            <i class="fas fa-mobile-alt"></i>
+                            <h3>Offline Mode</h3>
+                            <p>Access essential features even without internet connection</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        {{> footer }}
+    

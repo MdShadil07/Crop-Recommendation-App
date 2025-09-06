@@ -1,0 +1,40 @@
+{{!-- views/pages/ai-assistant.hbs --}}
+<section id="ai-assistant-page" class="content-page">
+    <div class="page-header">
+        <h1>AI Assistant</h1>
+        <p>Get instant answers to your farming questions.</p>
+    </div>
+
+    <div class="chat-container">
+        <div class="chat-messages" id="chat-messages">
+            <div class="message bot-message">
+                <div class="message-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="message-content">
+                    <p>Hello! I'm your AI farming assistant. How can I help you today?</p>
+                    <small>Just now</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-suggestions">
+            <button class="suggestion-chip">What crop should I plant this season?</button>
+            <button class="suggestion-chip">How to treat wheat rust disease?</button>
+            <button class="suggestion-chip">Current market rates for vegetables</button>
+        </div>
+
+        <div class="chat-input">
+            <button class="voice-btn" id="voice-btn">
+                <i class="fas fa-microphone"></i>
+            </button>
+            <input type="text" placeholder="Type your question..." id="chat-input" class="form-control">
+            <button class="send-btn" id="send-btn">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+            <button class="camera-btn" id="camera-btn">
+                <i class="fas fa-camera"></i>
+            </button>
+        </div>
+    </div>
+</section>
