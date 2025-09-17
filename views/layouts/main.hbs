@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{title}}</title>
+
+  <!-- Main CSS -->
+  <link rel="stylesheet" href="/css/style.css" />
+
+  <!-- Font Awesome -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
+
+  <!-- PWA / Theme -->
+  <link rel="manifest" href="#" />
+  <meta name="theme-color" content="#000000" />
+</head>
+<body>
+  <div class="floating-icons">
+        <i class="fas fa-seedling floating-icon" style="--delay: 0s; --x: 10%; --y: 20%;"></i>
+        <i class="fas fa-tractor floating-icon" style="--delay: 2s; --x: 85%; --y: 15%;"></i>
+        <i class="fas fa-leaf floating-icon" style="--delay: 1s; --x: 15%; --y: 75%;"></i>
+        <i class="fas fa-wheat-awk floating-icon" style="--delay: 3s; --x: 80%; --y: 70%;"></i>
+        <i class="fas fa-apple-alt floating-icon" style="--delay: 1.5s; --x: 70%; --y: 30%;"></i>
+        <i class="fas fa-carrot floating-icon" style="--delay: 2.5s; --x: 25%; --y: 45%;"></i>
+        <i class="fas fa-corn floating-icon" style="--delay: 3.5s; --x: 90%; --y: 85%;"></i>
+        <i class="fas fa-sun floating-icon" style="--delay: 0.5s; --x: 5%; --y: 60%;"></i>
+        <i class="fas fa-cloud-rain floating-icon" style="--delay: 4s; --x: 60%; --y: 10%;"></i>
+        <i class="fas fa-satellite floating-icon" style="--delay: 1.8s; --x: 30%; --y: 80%;"></i>
+        <i class="fas fa-microscope floating-icon" style="--delay: 2.2s; --x: 75%; --y: 50%;"></i>
+        <i class="fas fa-chart-line floating-icon" style="--delay: 1.2s; --x: 45%; --y: 25%;"></i>
+    </div>
+  
+  <!-- Header Partial -->
+  {{#if showHeader}}
+       {{> header }}
+    {{/if}}
+
+  <!-- App Container -->
+  <div class="app-container">
+    {{#if showSidebar}}
+      <!-- Sidebar Partial -->
+      {{> sidebar }}
+    {{/if}}
+
+    <!-- Main Content -->
+    <main class="main-content">
+      {{{body}}}
+
+       <div id="toast-container" class="toast-container"></div>
+    </main>
+  </div>
+
+  {{#if showFooter}}
+    <!-- Footer Partial -->
+    {{> footer }}
+  {{/if}}
+
+  <!-- Notifications and Modals -->
+  {{> notifications }}
+  {{!-- {{> language-modal }} --}}
+
+  <!-- Main JS -->
+  <script src="/js/app.js"></script>
+</body>
+</html>

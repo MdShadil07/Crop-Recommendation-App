@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Signup | AgriAI</title>
+
+    <!-- Bootstrap 5.3.0 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- App Styles -->
+    <link rel="stylesheet" href="/css/signup.css">
+</head>
+<body>
+    <!-- Floating Icons -->
+    <div class="floating-icons">
+        <i class="fas fa-seedling floating-icon" style="--delay:0s;--x:10%;--y:20%;"></i>
+        <i class="fas fa-tractor floating-icon" style="--delay:2s;--x:85%;--y:15%;"></i>
+        <i class="fas fa-leaf floating-icon" style="--delay:1s;--x:15%;--y:75%;"></i>
+        <i class="fas fa-apple-alt floating-icon" style="--delay:1.5s;--x:70%;--y:30%;"></i>
+        <i class="fas fa-carrot floating-icon" style="--delay:2.5s;--x:25%;--y:45%;"></i>
+        <i class="fas fa-sun floating-icon" style="--delay:0.5s;--x:5%;--y:60%;"></i>
+        <i class="fas fa-cloud-rain floating-icon" style="--delay:4s;--x:60%;--y:10%;"></i>
+    </div>
+
+    <!-- Header -->
+    <header class="auth-header">
+        <a href="/" class="auth-logo">
+            <i class="fas fa-seedling"></i> <span>AgriAI</span>
+        </a>
+        <div class="language-selector">
+            <select class="lang-toggle">
+                <option value="en">🇺🇸 English</option>
+                <option value="hi">🇮🇳 हिंदी</option>
+                <option value="mr">🇮🇳 मराठी</option>
+                <option value="ta">🇮🇳 தமிழ்</option>
+                <option value="te">🇮🇳 తెలుగు</option>
+                <option value="bn">🇮🇳 বাংলা</option>
+            </select>
+        </div>
+    </header>
+
+    <!-- Main -->
+    <main class="auth-main">
+        <div class="auth-grid">
+            <!-- Hero -->
+            <div class="auth-hero">
+                <div class="hero-content">
+                    <div class="hero-badge">
+                        <i class="fas fa-sparkles"></i>
+                        <span>Powered by Artificial Intelligence</span>
+                    </div>
+                    <h1 class="hero-title">Smart Farming with AI</h1>
+                    <p class="hero-subtitle">
+                        Get personalized crop recommendations, real-time market insights,
+                        and expert agricultural advice powered by AI.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Signup Form -->
+            <div class="auth-forms">
+                <div class="auth-card">
+                    <div class="auth-form" id="signupForm">
+                        <!-- Stepper -->
+                        <div class="step-progress">
+                            <div class="step-indicator">
+                                <div class="step active" data-step="1">1</div>
+                                <div class="step-connector"></div>
+                                <div class="step" data-step="2">2</div>
+                                <div class="step-connector"></div>
+                                <div class="step" data-step="3">3</div>
+                                <div class="step-connector"></div>
+                                <div class="step" data-step="4">4</div>
+                            </div>
+                        </div>
+
+                        <div class="form-header">
+                            <h2 class="form-title" id="stepTitle">Choose Your Role</h2>
+                            <p class="form-subtitle" id="stepSubtitle">Let us personalize your experience</p>
+                        </div>
+
+                        <!-- Signup Form Steps -->
+                        <form id="signupFormElement" novalidate>
+                           <!-- Step 1: User Type Selection -->
+                            <div class="form-step active" id="step1">
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <i class="fas fa-user-tag"></i>
+                                        I want to register as a
+                                    </label>
+                                    <div class="user-type-selection">
+                                        <div class="user-type-option">
+                                            <input type="radio" id="signupFarmer" name="signupUserType" value="farmer" checked>
+                                            <label for="signupFarmer" class="user-type-card">
+                                                <div class="user-type-icon">
+                                                    <i class="fas fa-tractor"></i>
+                                                </div>
+                                                <div class="user-type-title">Farmer</div>
+                                                <div class="user-type-desc">Grow & manage crops</div>
+                                            </label>
+                                        </div>
+                                        <div class="user-type-option">
+                                            <input type="radio" id="signupExpert" name="signupUserType" value="expert">
+                                            <label for="signupExpert" class="user-type-card">
+                                                <div class="user-type-icon">
+                                                    <i class="fas fa-user-graduate"></i>
+                                                </div>
+                                                <div class="user-type-title">Expert</div>
+                                                <div class="user-type-desc">Agricultural advisor</div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Personal Information -->
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <i class="fas fa-user"></i>
+                                        Personal Information
+                                    </label>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <input type="text" class="form-control" id="firstName" placeholder="First Name" required>
+                                            <div class="invalid-feedback"></div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input type="text" class="form-control" id="lastName" placeholder="Last Name" required>
+                                            <div class="invalid-feedback"></div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <input type="email" class="form-control" id="email" placeholder="Email Address" required>
+                                        <div class="invalid-feedback"></div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <input type="tel" class="form-control" id="phone" placeholder="Phone Number" required>
+                                        <div class="invalid-feedback"></div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="input-group">
+                                            <input type="password" class="form-control" id="password" placeholder="Create Password" required>
+                                            <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                        <div class="invalid-feedback"></div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="input-group">
+                                            <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm Password" required>
+                                            <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword')">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                        <div class="invalid-feedback"></div>
+                                    </div>
+                                </div>
+
+                                <div class="step-nav">
+                                    <button type="button" class="btn-next" id="step1Next">
+                                        Continue
+                                        <i class="fas fa-arrow-right ms-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Step 2: Field/Business Details -->
+                            <div class="form-step" id="step2">
+                                <!-- Farmer Fields -->
+                                <div class="farmer-fields">
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            Farm Location
+                                        </label>
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <select class="form-select" id="state" required>
+                                                    <option value="">Select State</option>
+                                                </select>
+                                                <div class="invalid-feedback"></div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <select class="form-select" id="district" required>
+                                                    <option value="">Select District</option>
+                                                </select>
+                                                <div class="invalid-feedback"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            <i class="fas fa-expand-arrows-alt"></i>
+                                            Field Size
+                                        </label>
+                                        <div class="field-size-container">
+                                            <div class="field-size-display" id="fieldSizeDisplay">5 Acres</div>
+                                            <input type="range" class="field-size-range" id="fieldSize" min="0.5" max="1000" value="5" step="0.5">
+                                            <div class="field-size-options">
+                                                <button type="button" class="field-size-btn" onclick="setFieldSize(1)">1 Acre</button>
+                                                <button type="button" class="field-size-btn" onclick="setFieldSize(5)">5 Acres</button>
+                                                <button type="button" class="field-size-btn" onclick="setFieldSize(10)">10 Acres</button>
+                                                <button type="button" class="field-size-btn" onclick="setFieldSize(25)">25 Acres</button>
+                                                <button type="button" class="field-size-btn" onclick="setFieldSize(50)">50 Acres</button>
+                                                <button type="button" class="field-size-btn" onclick="setFieldSize(100)">100+ Acres</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group crop-selection">
+                                        <label class="form-label">
+                                            <i class="fas fa-seedling"></i>
+                                            Crops You Grow (Select multiple)
+                                        </label>
+                                        <div class="crop-grid">
+                                            <div class="crop-option">
+                                                <input type="checkbox" id="crop-wheat" name="crops" value="wheat">
+                                                <label for="crop-wheat" class="crop-card">
+                                                    <div class="crop-icon">🌾</div>
+                                                    <div class="crop-name">Wheat</div>
+                                                </label>
+                                            </div>
+                                            <div class="crop-option">
+                                                <input type="checkbox" id="crop-rice" name="crops" value="rice">
+                                                <label for="crop-rice" class="crop-card">
+                                                    <div class="crop-icon">🍚</div>
+                                                    <div class="crop-name">Rice</div>
+                                                </label>
+                                            </div>
+                                            <div class="crop-option">
+                                                <input type="checkbox" id="crop-corn" name="crops" value="corn">
+                                                <label for="crop-corn" class="crop-card">
+                                                    <div class="crop-icon">🌽</div>
+                                                    <div class="crop-name">Corn</div>
+                                                </label>
+                                            </div>
+                                            <div class="crop-option">
+                                                <input type="checkbox" id="crop-potato" name="crops" value="potato">
+                                                <label for="crop-potato" class="crop-card">
+                                                    <div class="crop-icon">🥔</div>
+                                                    <div class="crop-name">Potato</div>
+                                                </label>
+                                            </div>
+                                            <div class="crop-option">
+                                                <input type="checkbox" id="crop-tomato" name="crops" value="tomato">
+                                                <label for="crop-tomato" class="crop-card">
+                                                    <div class="crop-icon">🍅</div>
+                                                    <div class="crop-name">Tomato</div>
+                                                </label>
+                                            </div>
+                                            <div class="crop-option">
+                                                <input type="checkbox" id="crop-onion" name="crops" value="onion">
+                                                <label for="crop-onion" class="crop-card">
+                                                    <div class="crop-icon">🧅</div>
+                                                    <div class="crop-name">Onion</div>
+                                                </label>
+                                            </div>
+                                            <div class="crop-option">
+                                                <input type="checkbox" id="crop-cotton" name="crops" value="cotton">
+                                                <label for="crop-cotton" class="crop-card">
+                                                    <div class="crop-icon">🌿</div>
+                                                    <div class="crop-name">Cotton</div>
+                                                </label>
+                                            </div>
+                                            <div class="crop-option">
+                                                <input type="checkbox" id="crop-sugarcane" name="crops" value="sugarcane">
+                                                <label for="crop-sugarcane" class="crop-card">
+                                                    <div class="crop-icon">🎋</div>
+                                                    <div class="crop-name">Sugarcane</div>
+                                                </label>
+                                            </div>
+                                            <div class="add-crop-btn" onclick="openCustomCropModal()">
+                                                <i class="fas fa-plus" style="font-size: 1.5rem; margin-bottom: var(--spacing-2);"></i>
+                                                <span>Add Custom Crop</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            <i class="fas fa-leaf"></i>
+                                            Farming Method
+                                        </label>
+                                        <div class="farming-methods">
+                                            <div class="method-option">
+                                                <input type="radio" id="organic" name="farmingMethod" value="organic">
+                                                <label for="organic" class="method-card">
+                                                    <div class="method-icon">
+                                                        <i class="fas fa-leaf"></i>
+                                                    </div>
+                                                    <div class="method-title">Organic</div>
+                                                    <div class="method-desc">Chemical-free farming</div>
+                                                </label>
+                                            </div>
+                                            <div class="method-option">
+                                                <input type="radio" id="traditional" name="farmingMethod" value="traditional">
+                                                <label for="traditional" class="method-card">
+                                                    <div class="method-icon">
+                                                        <i class="fas fa-tractor"></i>
+                                                    </div>
+                                                    <div class="method-title">Traditional</div>
+                                                    <div class="method-desc">Conventional methods</div>
+                                                </label>
+                                            </div>
+                                            <div class="method-option">
+                                                <input type="radio" id="hybrid" name="farmingMethod" value="hybrid">
+                                                <label for="hybrid" class="method-card">
+                                                    <div class="method-icon">
+                                                        <i class="fas fa-balance-scale"></i>
+                                                    </div>
+                                                    <div class="method-title">Hybrid</div>
+                                                    <div class="method-desc">Mixed approach</div>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Expert Fields -->
+                                <div class="expert-fields hidden">
+                                    <div class="form-group">
+                                        <label for="expertise" class="form-label">
+                                            <i class="fas fa-graduation-cap"></i>
+                                            Area of Expertise
+                                        </label>
+                                        <select class="form-select" id="expertise" required>
+                                            <option value="">Select your expertise</option>
+                                            <option value="crop-science">Crop Science</option>
+                                            <option value="soil-science">Soil Science</option>
+                                            <option value="agricultural-engineering">Agricultural Engineering</option>
+                                            <option value="plant-pathology">Plant Pathology</option>
+                                            <option value="entomology">Entomology</option>
+                                            <option value="agribusiness">Agribusiness</option>
+                                            <option value="sustainable-agriculture">Sustainable Agriculture</option>
+                                        </select>
+                                        <div class="invalid-feedback"></div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="experience" class="form-label">
+                                            <i class="fas fa-clock"></i>
+                                            Years of Experience
+                                        </label>
+                                        <select class="form-select" id="experience" required>
+                                            <option value="">Select experience</option>
+                                            <option value="1-3">1-3 years</option>
+                                            <option value="4-7">4-7 years</option>
+                                            <option value="8-15">8-15 years</option>
+                                            <option value="15+">15+ years</option>
+                                        </select>
+                                        <div class="invalid-feedback"></div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="qualification" class="form-label">
+                                            <i class="fas fa-certificate"></i>
+                                            Highest Qualification
+                                        </label>
+                                        <select class="form-select" id="qualification" required>
+                                            <option value="">Select qualification</option>
+                                            <option value="diploma">Diploma in Agriculture</option>
+                                            <option value="bachelor">Bachelor's in Agriculture</option>
+                                            <option value="master">Master's in Agriculture</option>
+                                            <option value="phd">PhD in Agriculture</option>
+                                        </select>
+                                        <div class="invalid-feedback"></div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="organization" class="form-label">
+                                            <i class="fas fa-building"></i>
+                                            Current Organization (Optional)
+                                        </label>
+                                        <input type="text" class="form-control" id="organization" placeholder="University, Company, or Independent">
+                                    </div>
+                                </div>
+
+                                <div class="step-nav">
+                                    <button type="button" class="btn-back" id="step2Back">
+                                        <i class="fas fa-arrow-left me-2"></i>
+                                        Back
+                                    </button>
+                                    <button type="button" class="btn-next" id="step2Next">
+                                        Continue
+                                        <i class="fas fa-arrow-right ms-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Step 3: Verification Method Selection -->
+                            <div class="form-step" id="step3">
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <i class="fas fa-shield-check"></i>
+                                        Choose Verification Method
+                                    </label>
+                                    <div class="verification-methods">
+                                        <div class="verification-option">
+                                            <input type="radio" id="verifyEmail" name="verificationMethod" value="email" checked>
+                                            <label for="verifyEmail" class="verification-card">
+                                                <div class="verification-icon">
+                                                    <i class="fas fa-envelope"></i>
+                                                </div>
+                                                <div class="user-type-title">Email</div>
+                                                <div class="user-type-desc">Verify via email</div>
+                                            </label>
+                                        </div>
+                                        <div class="verification-option">
+                                            <input type="radio" id="verifyPhone" name="verificationMethod" value="phone">
+                                            <label for="verifyPhone" class="verification-card">
+                                                <div class="verification-icon">
+                                                    <i class="fas fa-sms"></i>
+                                                </div>
+                                                <div class="user-type-title">Phone</div>
+                                                <div class="user-type-desc">Verify via SMS</div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group" id="verificationInput">
+                                    <label for="verificationContact" class="form-label" id="verificationLabel">
+                                        <i class="fas fa-envelope"></i>
+                                        Enter Email Address
+                                    </label>
+                                    <input type="email" class="form-control" id="verificationContact" placeholder="Enter your email address" required>
+                                    <div class="invalid-feedback"></div>
+                                </div>
+
+                                <div class="step-nav">
+                                    <button type="button" class="btn-back" id="step3Back">
+                                        <i class="fas fa-arrow-left me-2"></i>
+                                        Back
+                                    </button>
+                                    <button type="button" class="btn-next" id="step3Next">
+                                        Send Verification Code
+                                        <i class="fas fa-paper-plane ms-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Step 4: Verification & Terms -->
+                            <div class="form-step" id="step4">
+                                <div class="otp-container">
+                                    <h4 style="color: var(--color-text); margin-bottom: var(--spacing-4);">
+                                        <i class="fas fa-shield-check text-success me-2"></i>
+                                        Enter Verification Code
+                                    </h4>
+                                    <p style="color: var(--color-text-secondary); margin-bottom: var(--spacing-6);" id="verificationMessage">
+                                        We've sent a 6-digit code to your email address
+                                    </p>
+                                    
+                                    <div class="otp-inputs">
+                                        <input type="text" class="otp-input" maxlength="1">
+                                        <input type="text" class="otp-input" maxlength="1">
+                                        <input type="text" class="otp-input" maxlength="1">
+                                        <input type="text" class="otp-input" maxlength="1">
+                                        <input type="text" class="otp-input" maxlength="1">
+                                        <input type="text" class="otp-input" maxlength="1">
+                                    </div>
+                                    
+                                    <p class="resend-code" id="resendCode">Didn't receive code? Resend</p>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="form-check mb-3">
+                                        <input type="checkbox" class="form-check-input" id="agreeTerms" required>
+                                        <label class="form-check-label" for="agreeTerms">
+                                            I agree to the <a href="#" style="color: var(--color-secondary);">Terms of Service</a> 
+                                            and <a href="#" style="color: var(--color-secondary);">Privacy Policy</a>
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="marketingEmails">
+                                        <label class="form-check-label" for="marketingEmails">
+                                            I want to receive updates about new features and agricultural insights
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="step-nav">
+                                    <button type="button" class="btn-back" id="step4Back">
+                                        <i class="fas fa-arrow-left me-2"></i>
+                                        Back
+                                    </button>
+                                    <button type="submit" class="btn-next" id="createAccountBtn">
+                                        <i class="fas fa-check me-2"></i>
+                                        Create Account
+                                    </button>
+                                </div>
+
+                                <!-- Social Signup -->
+                                <div class="social-login">
+                                    <div class="social-title">Or create account with</div>
+                                    <div class="social-buttons">
+                                        <a href="#" class="social-btn google">
+                                            <i class="fab fa-google"></i>
+                                            <span>Google</span>
+                                        </a>
+                                        <a href="#" class="social-btn facebook">
+                                            <i class="fab fa-facebook"></i>
+                                            <span>Facebook</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="form-links">
+                        <p>Already have an account? <a href="/login">Sign in</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/signup.js"></script>
+
+</body>
+</html>

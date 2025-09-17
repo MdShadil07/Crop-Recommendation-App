@@ -1,4 +1,5 @@
-const express = require('express');
+const express = require("express");
+const { ensureAuthenticated } = require("../middleware/auth"); // ✅ import middleware
 const router = express.Router();
 
 // Root route → Landing page (no sidebar/footer)
@@ -6,18 +7,24 @@ router.get("/", (req, res) => {
   res.render("index", { 
     title: "Home", 
     layout: "main",
-    showSidebar: false,  // hide sidebar
+    showSidebar: false,
     showFooter: false,
-    showHeader: false   // hide footer
+    showHeader: false
   });
 });
 
-router.get("/signup-page", (req, res)=>{
-  res.render("signup-page")
+// Route for login page
+router.get('/login', (req, res) => {
+    res.render('pages/login-page', { isSignupPage: false });
 });
 
-// Dashboard page → show sidebar/footer
-router.get("/dashboard", (req, res) => {
+// Route for signup page
+router.get('/signup', (req, res) => {
+    res.render('pages/signup-page', { isSignupPage: true });
+});
+
+// Dashboard → protected
+router.get("/dashboard", ensureAuthenticated,(req, res) => {
   res.render("pages/dashboard", { 
     title: "Dashboard", 
     layout: "main",
@@ -26,8 +33,8 @@ router.get("/dashboard", (req, res) => {
   });
 });
 
-// Market Trends
-router.get("/market-trends", (req, res) => {
+// Market Trends → protected
+router.get("/market-trends", ensureAuthenticated ,(req, res) => {
   res.render("pages/market-trends", { 
     title: "Market Trends", 
     layout: "main",
@@ -36,8 +43,8 @@ router.get("/market-trends", (req, res) => {
   });
 });
 
-// AI Assistant
-router.get("/ai-assistant", (req, res) => {
+// AI Assistant → protected
+router.get("/ai-assistant", ensureAuthenticated, (req, res) => {
   res.render("pages/ai-assistant", { 
     title: "AI Assistant", 
     layout: "main",
@@ -46,8 +53,8 @@ router.get("/ai-assistant", (req, res) => {
   });
 });
 
-// Farm Diary
-router.get("/farm-diary", (req, res) => {
+// Farm Diary → protected
+router.get("/farm-diary", ensureAuthenticated, (req, res) => {
   res.render("pages/farm-diary", { 
     title: "Farm Diary", 
     layout: "main",
@@ -56,8 +63,8 @@ router.get("/farm-diary", (req, res) => {
   });
 });
 
-// Settings
-router.get("/settings", (req, res) => {
+// Settings → protected
+router.get("/settings", ensureAuthenticated, (req, res) => {
   res.render("pages/setting", { 
     title: "Settings", 
     layout: "main",
