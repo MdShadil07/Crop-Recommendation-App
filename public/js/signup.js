@@ -523,21 +523,51 @@ function setupStepNavigation() {
   });
 
   $("#step2Next").click((e) => { e.preventDefault(); goToStep(3); });
-  $("#step3Next").click((e) => {
-    e.preventDefault();
-    const contact = $("#verificationContact").val().trim();
-    if (!contact) {
-      showToast("Please enter your verification contact", "warning");
-      return;
+
+  // ✅ FIXED: Step 3 now triggers OTP sending instead of skipping to step 4
+  $("#step3Next").click(async (e) => {
+  e.preventDefault();
+  const contact = $("#verificationContact").val().trim();
+  if (!contact) {
+    showToast("Please enter your verification contact", "warning");
+    return;
+  }
+
+    try {
+    console.log("📤 Sending signup request:", collectFormData());
+    const res = await fetch("/auth/send-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ 
+        contact, 
+        method: $('input[name="verificationMethod"]:checked').val() 
+      }),
+    });
+
+      const result = await res.json();
+      console.log("📥 Signup response:", result);
+
+      if (res.ok && result.success) {
+        otpSessionId = result.userId; // ✅ save backend userId/sessionId
+        console.log("📧 OTP email sent. userId:", otpSessionId);
+        showToast("Verification code sent! Please check your email.", "success");
+        goToStep(4); // ✅ only go to step 4 when email sent
+      } else {
+        showToast(result.message || "Failed to send verification code", "error");
+      }
+    } catch (err) {
+      console.error("❌ Error sending OTP:", err);
+      showToast("Could not send verification code", "error");
     }
-    goToStep(4);
   });
 
   $("#step2Back").click(() => goToStep(1));
   $("#step3Back").click(() => goToStep(2));
   $("#step4Back").click(() => goToStep(3));
+
   $("#createAccountBtn").click(handleAccountCreation);
 }
+
 
 function goToStep(step) {
   currentStep = step;

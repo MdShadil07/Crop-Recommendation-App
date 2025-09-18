@@ -6,58 +6,124 @@ const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
 const User = require('../models/User');
 
+// ----------------- Send OTP (Step 0) -----------------
+router.post('/send-otp', async (req, res) => {
+  console.log("📩 Incoming send-otp request:", req.body);
+
+  try {
+    const { contact, method } = req.body;
+
+    if (!contact || !method) {
+      console.warn("⚠️ Missing contact or method");
+      return res.status(400).json({ success: false, message: 'Contact and method are required.' });
+    }
+
+    // Generate OTP
+    const otpPlain = String(Math.floor(100000 + Math.random() * 900000));
+    const hashedOtp = await bcrypt.hash(otpPlain, 10);
+
+    // Here you can either:
+    // 1. Store OTP in DB (linked to email/phone)
+    // 2. Or store in-memory for testing (less secure)
+    // For now, let's just simulate DB-like storage:
+    const sessionId = Date.now().toString(); // simple unique ID
+    req.app.locals.otpSessions = req.app.locals.otpSessions || {};
+    req.app.locals.otpSessions[sessionId] = {
+      contact,
+      method,
+      hashedOtp,
+      createdAt: Date.now()
+    };
+
+    console.log(`🔑 OTP generated for ${method}:${contact} = ${otpPlain}`);
+
+    // Send email if method=email
+    if (method === "email") {
+      try {
+        const transporter = nodemailer.createTransport({
+          service: process.env.EMAIL_SERVICE || 'gmail',
+          auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS
+          }
+        });
+
+        const emailHtml = `
+          <div style="font-family:Arial, sans-serif; padding:20px;">
+            <h2>Email Verification</h2>
+            <p>Use this code to verify your email:</p>
+            <p><strong style="font-size:20px;">${otpPlain}</strong></p>
+          </div>
+        `;
+
+        await transporter.sendMail({
+          from: `"AgriAI Support" <${process.env.EMAIL_USER}>`,
+          to: contact,
+          subject: 'AgriAI — Verify your email with this OTP',
+          html: emailHtml
+        });
+
+        console.log("📧 OTP email sent to:", contact);
+      } catch (emailErr) {
+        console.error("❌ Email sending failed:", emailErr);
+        return res.status(500).json({
+          success: false,
+          message: 'OTP generation succeeded but email sending failed.',
+          error: emailErr.message
+        });
+      }
+    }
+
+    // TODO: Add SMS provider if method === "phone"
+
+    return res.status(200).json({
+      success: true,
+      message: `OTP sent via ${method}.`,
+      sessionId
+    });
+
+  } catch (err) {
+    console.error("❌ send-otp error:", err);
+    return res.status(500).json({ success: false, message: 'Failed to send OTP.', error: err.message });
+  }
+});
+
+// ----------------- Signup Route (Step 1) -----------------
 // ----------------- Signup Route (Step 1) -----------------
 router.post('/signup', async (req, res) => {
   console.log("📩 Incoming signup request:", JSON.stringify(req.body, null, 2));
-
   try {
     const { personal, password, confirmPassword, userType, farm, expert, marketingEmails, agreeTerms } = req.body;
 
-    // ----------------- BASIC VALIDATION -----------------
     if (!personal?.firstName || !personal?.lastName || !personal?.email || !personal?.phone) {
-      console.warn("⚠️ Missing required personal fields");
       return res.status(400).json({ success: false, message: 'Missing required personal information.' });
     }
-
     if (!password || !confirmPassword) {
-      console.warn("⚠️ Password or confirm password missing");
       return res.status(400).json({ success: false, message: 'Password and confirm password are required.' });
     }
-
     if (password !== confirmPassword) {
-      console.warn("⚠️ Passwords do not match");
       return res.status(400).json({ success: false, message: 'Passwords do not match.' });
     }
-
     if (!agreeTerms) {
-      console.warn("⚠️ User did not agree to terms");
       return res.status(400).json({ success: false, message: 'You must agree to terms.' });
     }
 
-    // ----------------- DUPLICATE CHECK -----------------
     const existingUser = await User.findOne({
-      $or: [
-        { email: personal.email.toLowerCase() },
-        { phone: personal.phone }
-      ]
+      $or: [{ email: personal.email.toLowerCase() }, { phone: personal.phone }]
     });
-
     if (existingUser) {
-      console.warn("⚠️ Duplicate user found:", existingUser.email || existingUser.phone);
       return res.status(400).json({ success: false, message: 'Email or phone already registered.' });
     }
 
-    // ----------------- TEMP PIN -----------------
     const tempPinPlain = String(Math.floor(100000 + Math.random() * 900000));
     const hashedTempPin = await bcrypt.hash(tempPinPlain, 10);
 
-    // ----------------- USER CREATION -----------------
     const newUser = new User({
       firstName: personal.firstName.trim(),
       lastName: personal.lastName.trim(),
       email: personal.email.toLowerCase().trim(),
       phone: personal.phone.trim(),
-      password, // 🔒 hash in pre-save hook in User model
+      password,
       tempPin: hashedTempPin,
       isVerified: false,
       userType,
@@ -81,7 +147,7 @@ router.post('/signup', async (req, res) => {
     await newUser.save();
     console.log("✅ New user created (pending verification):", newUser.email);
 
-    // ----------------- SEND EMAIL -----------------
+    // Send verification email
     try {
       const transporter = nodemailer.createTransport({
         service: process.env.EMAIL_SERVICE || 'gmail',
@@ -91,32 +157,33 @@ router.post('/signup', async (req, res) => {
         }
       });
 
-      const emailHtml = `
-        <div style="font-family:Arial, sans-serif; padding:20px;">
-          <h2>Welcome, ${personal.firstName} ${personal.lastName}</h2>
-          <p>Please verify your email to activate your account.</p>
-          <p><strong>Your Temporary PIN:</strong> ${tempPinPlain}</p>
-        </div>
-      `;
-
       await transporter.sendMail({
         from: `"AgriAI Support" <${process.env.EMAIL_USER}>`,
         to: newUser.email,
         subject: 'AgriAI — Verify your email with this PIN',
-        html: emailHtml
+        html: `<p>Your Temporary PIN: <b>${tempPinPlain}</b></p>`
       });
 
       console.log("📧 Verification email sent to:", newUser.email);
     } catch (emailErr) {
-      console.error("❌ Email sending failed:", emailErr);
-      return res.status(500).json({ success: false, message: 'Signup created but email sending failed.', error: emailErr.message });
+      return res.status(500).json({
+        success: false,
+        message: 'Signup created but email sending failed.',
+        error: emailErr.message
+      });
     }
 
-    return res.status(200).json({
-      success: true,
-      message: 'Signup successful. PIN sent to email. Please verify.',
-      userId: newUser._id
-    });
+    // ✅ Decide redirect vs JSON
+    if (req.xhr || req.headers.accept?.includes("application/json")) {
+      return res.status(200).json({
+        success: true,
+        message: 'Signup successful. PIN sent to email. Please verify.',
+        userId: newUser._id,
+        redirectUrl: '/dashboard' // helpful for frontend
+      });
+    } else {
+      return res.redirect('/dashboard');
+    }
 
   } catch (err) {
     console.error("❌ Signup error:", err);
@@ -124,43 +191,46 @@ router.post('/signup', async (req, res) => {
   }
 });
 
+
 // ----------------- Verify PIN/OTP Route (Step 2) -----------------
+// ----------------- Verify PIN/OTP Route (Step 2) -----------------
+// ----------------- Verify PIN/OTP Route -----------------
 router.post('/verify-pin', async (req, res) => {
   console.log("🔑 Incoming PIN verification:", req.body);
 
   try {
     const { userId, pin } = req.body;
     if (!userId || !pin) {
-      console.warn("⚠️ Missing userId or pin");
       return res.status(400).json({ success: false, message: 'Missing userId or PIN.' });
     }
 
     const user = await User.findById(userId);
-    if (!user) {
-      console.warn("⚠️ User not found with ID:", userId);
-      return res.status(404).json({ success: false, message: 'User not found.' });
-    }
+    if (!user) return res.status(404).json({ success: false, message: 'User not found.' });
 
     if (user.isVerified) {
-      console.info("ℹ️ User already verified:", user.email);
-      return res.status(200).json({ success: true, message: 'User already verified.' });
+      return res.status(200).json({
+        success: true,
+        message: 'User already verified.',
+        redirectUrl: '/dashboard' // redirect if already verified
+      });
     }
 
     const isMatch = await bcrypt.compare(pin, user.tempPin);
-    console.log("🔍 PIN compare result:", isMatch);
+    if (!isMatch) return res.status(400).json({ success: false, message: 'Invalid PIN.' });
 
-    if (!isMatch) {
-      console.warn("⚠️ Incorrect PIN for user:", user.email);
-      return res.status(400).json({ success: false, message: 'Invalid PIN.' });
-    }
-
+    // Mark user as verified
     user.isVerified = true;
-    user.tempPin = undefined; // 🔒 clear temp PIN
+    user.tempPin = undefined;
     await user.save();
 
     console.log("✅ User verified successfully:", user.email);
 
-    return res.status(200).json({ success: true, message: 'Account verified successfully.' });
+    // Return redirect URL to dashboard
+    return res.status(200).json({
+      success: true,
+      message: 'Account verified successfully.',
+      redirectUrl: '/dashboard'
+    });
 
   } catch (err) {
     console.error("❌ PIN verification error:", err);
@@ -168,41 +238,28 @@ router.post('/verify-pin', async (req, res) => {
   }
 });
 
-// Alias for frontend that expects `/verify-otp`
-router.post('/verify-otp', async (req, res) => {
+// ----------------- Alias for frontend expecting `/verify-otp` -----------------
+router.post('/verify-otp', (req, res, next) => {
   console.log("🔄 Redirecting /verify-otp -> /verify-pin");
-  req.body.pin = req.body.otp; // normalize naming
-  return router.handle({ ...req, url: '/verify-pin', method: 'POST' }, res);
+  req.body.pin = req.body.otp; // normalize
+  return router.handle({ ...req, url: '/verify-pin', method: 'POST' }, res, next);
 });
 
-// ----------------- Check Email/Phone Route -----------------
-router.get('/check-identifier', async (req, res) => {
-  console.log("🔍 Incoming check-identifier request:", req.query);
 
+// ----------------- Check Email/Phone -----------------
+router.get('/check-identifier', async (req, res) => {
   try {
     const { email, phone } = req.query;
-
     if (!email && !phone) {
-      console.warn("⚠️ Missing identifier in request");
       return res.status(400).json({ success: false, message: 'Email or phone is required.' });
     }
-
     let query = {};
     if (email) query.email = email.toLowerCase();
     if (phone) query.phone = phone.trim();
 
     const existingUser = await User.findOne(query);
-
-    if (existingUser) {
-      console.info("ℹ️ Identifier already registered:", existingUser.email || existingUser.phone);
-      return res.status(200).json({ success: true, exists: true });
-    }
-
-    console.info("✅ Identifier is available:", email || phone);
-    return res.status(200).json({ success: true, exists: false });
-
+    return res.status(200).json({ success: true, exists: !!existingUser });
   } catch (err) {
-    console.error("❌ Check identifier error:", err);
     return res.status(500).json({ success: false, message: 'Failed to check identifier.', error: err.message });
   }
 });
