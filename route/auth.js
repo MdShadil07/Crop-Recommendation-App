@@ -195,41 +195,64 @@ router.post('/signup', async (req, res) => {
 // ----------------- Verify PIN/OTP Route (Step 2) -----------------
 // ----------------- Verify PIN/OTP Route (Step 2) -----------------
 // ----------------- Verify PIN/OTP Route -----------------
+
+
+// ----------------- Verify PIN/OTP Route (Step 2) -----------------
 router.post('/verify-pin', async (req, res) => {
   console.log("🔑 Incoming PIN verification:", req.body);
 
   try {
-    const { userId, pin } = req.body;
-    if (!userId || !pin) {
-      return res.status(400).json({ success: false, message: 'Missing userId or PIN.' });
+    const { sessionId, pin } = req.body;
+    if (!sessionId || !pin) {
+      return res.status(400).json({ success: false, message: 'Missing sessionId or PIN.' });
     }
 
-    const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ success: false, message: 'User not found.' });
+    // Check OTP session stored in memory
+    const otpSessions = req.app.locals.otpSessions || {};
+    const session = otpSessions[sessionId];
+    if (!session) {
+      return res.status(400).json({ success: false, message: 'Invalid or expired OTP session.' });
+    }
 
-    if (user.isVerified) {
+    // Compare OTP
+    const isMatch = await bcrypt.compare(pin, session.hashedOtp);
+    if (!isMatch) {
+      return res.status(400).json({ success: false, message: 'Invalid OTP.' });
+    }
+
+    // OTP is valid → create user (if not already created)
+    const existingUser = await User.findOne({ 
+      $or: [{ email: session.contact }, { phone: session.contact }] 
+    });
+
+    if (existingUser && existingUser.isVerified) {
       return res.status(200).json({
         success: true,
         message: 'User already verified.',
-        redirectUrl: '/dashboard' // redirect if already verified
+        redirectUrl: '/dashboard'
       });
     }
 
-    const isMatch = await bcrypt.compare(pin, user.tempPin);
-    if (!isMatch) return res.status(400).json({ success: false, message: 'Invalid PIN.' });
+    // Mark existing user as verified (if exists)
+    if (existingUser) {
+      existingUser.isVerified = true;
+      existingUser.tempPin = undefined;
+      await existingUser.save();
 
-    // Mark user as verified
-    user.isVerified = true;
-    user.tempPin = undefined;
-    await user.save();
+      console.log("✅ User verified successfully:", existingUser.email);
+      delete otpSessions[sessionId]; // clean up session
 
-    console.log("✅ User verified successfully:", user.email);
+      return res.status(200).json({
+        success: true,
+        message: 'Account verified successfully.',
+        redirectUrl: '/dashboard'
+      });
+    }
 
-    // Return redirect URL to dashboard
+    // If no user yet, frontend will continue with signup
     return res.status(200).json({
       success: true,
-      message: 'Account verified successfully.',
-      redirectUrl: '/dashboard'
+      message: 'OTP verified successfully. You can now complete signup.',
     });
 
   } catch (err) {
@@ -241,9 +264,10 @@ router.post('/verify-pin', async (req, res) => {
 // ----------------- Alias for frontend expecting `/verify-otp` -----------------
 router.post('/verify-otp', (req, res, next) => {
   console.log("🔄 Redirecting /verify-otp -> /verify-pin");
-  req.body.pin = req.body.otp; // normalize
+  req.body.pin = req.body.otp; // normalize field name
   return router.handle({ ...req, url: '/verify-pin', method: 'POST' }, res, next);
 });
+
 
 
 // ----------------- Check Email/Phone -----------------

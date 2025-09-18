@@ -491,7 +491,7 @@ $(document).ready(function () {
   console.group("🌱 AgriAI Signup Init");
   initializeApp();
   console.groupEnd();
-});
+})
 
 function initializeApp() {
   setupUserTypeHandling();
@@ -524,34 +524,30 @@ function setupStepNavigation() {
 
   $("#step2Next").click((e) => { e.preventDefault(); goToStep(3); });
 
-  // ✅ FIXED: Step 3 now triggers OTP sending instead of skipping to step 4
+  // Step 3: send OTP
   $("#step3Next").click(async (e) => {
-  e.preventDefault();
-  const contact = $("#verificationContact").val().trim();
-  if (!contact) {
-    showToast("Please enter your verification contact", "warning");
-    return;
-  }
+    e.preventDefault();
+    const contact = $("#verificationContact").val().trim();
+    if (!contact) {
+      showToast("Please enter your verification contact", "warning");
+      return;
+    }
 
     try {
-    console.log("📤 Sending signup request:", collectFormData());
-    const res = await fetch("/auth/send-otp", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ 
-        contact, 
-        method: $('input[name="verificationMethod"]:checked').val() 
-      }),
-    });
+      const res = await fetch("/auth/send-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          contact, 
+          method: $('input[name="verificationMethod"]:checked').val() 
+        }),
+      });
 
       const result = await res.json();
-      console.log("📥 Signup response:", result);
-
       if (res.ok && result.success) {
-        otpSessionId = result.userId; // ✅ save backend userId/sessionId
-        console.log("📧 OTP email sent. userId:", otpSessionId);
+        otpSessionId = result.sessionId || result.userId;
         showToast("Verification code sent! Please check your email.", "success");
-        goToStep(4); // ✅ only go to step 4 when email sent
+        goToStep(4);
       } else {
         showToast(result.message || "Failed to send verification code", "error");
       }
@@ -567,6 +563,7 @@ function setupStepNavigation() {
 
   $("#createAccountBtn").click(handleAccountCreation);
 }
+
 
 
 function goToStep(step) {
@@ -589,6 +586,7 @@ function updateStepProgress(step) {
     } else if (i === step) $step.addClass("active");
   }
 }
+
 
 function updateStepHeader(step) {
   const titles = {
@@ -622,9 +620,8 @@ function toggleUserFields() {
   }
 }
 
-function toggleUserFieldsOnLoad() {
-  toggleUserFields();
-}
+
+function toggleUserFieldsOnLoad() { toggleUserFields(); }
 
 // ====================== Field Size ======================
 function setupFieldSizeRange() {
@@ -632,16 +629,6 @@ function setupFieldSizeRange() {
     const value = $(this).val();
     $("#fieldSizeDisplay").text(`${value} Acre${value > 1 ? "s" : ""}`);
   });
-}
-
-function setFieldSize(acres) {
-  $("#fieldSize").val(acres);
-  $("#fieldSizeDisplay").text(`${acres} Acre${acres > 1 ? "s" : ""}`);
-}
-
-// ====================== State/District Handling ======================
-function setupStateDistrictHandling() {
-  $("#state").change(function () { populateDistricts($(this).val()); });
 }
 
 function populateStates() {
@@ -662,10 +649,24 @@ function populateDistricts(stateKey) {
   }
 }
 
+function setupStateDistrictHandling() {
+  $("#state").change(function () { populateDistricts($(this).val()); });
+}
+
+// ====================== State/District Handling ======================
+function setupStateDistrictHandling() {
+  $("#state").change(function () { populateDistricts($(this).val()); });
+}
+
+
+
+
+
 // ====================== Verification Method ======================
 function setupVerificationMethodHandling() {
   $('input[name="verificationMethod"]').change(function () { updateVerificationInput($(this).val()); });
 }
+
 
 function updateVerificationInput(method) {
   const $input = $("#verificationContact");
@@ -678,7 +679,6 @@ function updateVerificationInput(method) {
     $label.html('<i class="fas fa-phone"></i> Enter Phone Number');
   }
 }
-
 // ====================== OTP Handling ======================
 // ====================== OTP Handling ======================
 function setupOTPInputs() {
@@ -701,14 +701,13 @@ function setupOTPInputs() {
       return;
     }
     try {
-      console.log("🔄 Resending OTP:", otpSessionId);
       const res = await fetch("/auth/resend-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sessionId: otpSessionId }),
       });
       const result = await res.json();
-      if (res.ok) showToast("OTP resent successfully!", "success");
+      if (res.ok && result.success) showToast("OTP resent successfully!", "success");
       else showToast(result.message || "Failed to resend OTP", "error");
     } catch (err) {
       console.error("❌ Resend OTP error:", err);
@@ -720,42 +719,65 @@ function setupOTPInputs() {
 async function handleAccountCreation(e) {
   e.preventDefault();
 
+  // 1️⃣ Collect OTP from inputs
   const otp = $(".otp-input").map((i, el) => $(el).val()).get().join("");
-  if (otp.length !== 6) { showToast("Please enter the complete verification code", "warning"); return; }
-  if (!$("#agreeTerms").prop("checked")) { showToast("Please agree to the Terms", "warning"); return; }
+  if (otp.length !== 6) {
+    showToast("Please enter the complete verification code", "warning");
+    return;
+  }
+  if (!$("#agreeTerms").prop("checked")) {
+    showToast("Please agree to the Terms", "warning");
+    return;
+  }
 
   try {
-    console.log("📤 Verifying OTP:", otp);
+    // 2️⃣ Verify OTP with backend
     const otpVerifyRes = await fetch("/auth/verify-otp", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sessionId: otpSessionId, otp }),
+      body: JSON.stringify({
+        sessionId: otpSessionId, // pass the OTP session, not userId
+        otp
+      }),
     });
+
     const otpResult = await otpVerifyRes.json();
-    if (!otpVerifyRes.ok || !otpResult.valid) {
-      showToast("Invalid or expired OTP", "error");
-      return;
+
+    if (!otpResult.success) {
+      showToast(otpResult.message || "Invalid or expired OTP", "error");
+      return; // stop here if OTP invalid
     }
 
+    // 3️⃣ Collect full form data
     const formData = collectFormData();
-    console.log("📤 Final Signup Payload:", formData);
 
-    const response = await fetch("/auth/signup", {
+    // 4️⃣ Send signup request
+    const signupRes = await fetch("/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
     });
+    const signupResult = await signupRes.json();
 
-    const result = await response.json();
-    console.log("📥 Signup response:", response.status, result);
+    if (signupRes.ok && signupResult.success) {
+      // ✅ Optional: redirect if backend sent redirectUrl
+      if (otpResult.redirectUrl) {
+        window.location.href = otpResult.redirectUrl;
+      } else {
+        showSuccessModal();
+      }
+    } else {
+      showToast(signupResult.message || "Signup failed", "error");
+    }
 
-    if (response.ok) showSuccessModal();
-    else showToast(result.message || "Signup failed", "error");
   } catch (error) {
     console.error("❌ Signup error:", error);
     showToast("Unexpected error during signup", "error");
   }
 }
+
+
+
 
 function collectFormData() {
   const crops = $('input[name="crops"]:checked').map((i, el) => $(el).val()).get();
@@ -792,10 +814,8 @@ function collectFormData() {
       organization: $("#organization").val(),
     };
   }
-  console.log("Form data" , data)
   return data;
 }
-
 
 
 // ====================== Success Modal ======================
@@ -813,6 +833,7 @@ function showSuccessModal() {
   $("body").append(modal);
   $("#goDashboardBtn").click(() => window.location.href = "/dashboard");
 }
+
 
 // ====================== Utility Functions ======================
 function togglePassword(inputId) {
