@@ -1,10 +1,12 @@
-// ====================== signup.js ======================
+// ====================== signup.js (Updated with debug logs & fixed OTP) ======================
+console.log("✅ Signup JS Loaded");
 
-// Global variables
+// ====================== Global Variables ======================
 let selectedUserType = $("input[name='signupUserType']:checked").val() || "farmer";
 let currentStep = 1;
-let otpSessionId = null; 
-
+let otpSessionId = null;
+let otpVerified = false;
+let signupInProgress = false;
 
 
 const stateDistrictData = {
@@ -485,70 +487,89 @@ const stateDistrictData = {
 };
 // Indian States and Districts Data
 
-
-// Document ready
+// ====================== Init ======================
 $(document).ready(function () {
   console.group("🌱 AgriAI Signup Init");
   initializeApp();
   console.groupEnd();
-})
+});
 
+// ====================== Initialization ======================
 function initializeApp() {
-  setupUserTypeHandling();
-  setupStepNavigation();
-  setupFieldSizeRange();
-  setupStateDistrictHandling();
-  setupVerificationMethodHandling();
-  setupOTPInputs();
-  populateStates();
-  toggleUserFieldsOnLoad();
-  updateStepHeader(currentStep);
-
-  console.log("✅ Signup JS Initialized");
+  try {
+    console.log("Initializing signup app...");
+    setupUserTypeHandling();
+    setupStepNavigation();
+    setupFieldSizeRange();
+    setupStateDistrictHandling();
+    setupVerificationMethodHandling();
+    setupOTPInputs();
+    loadStateDistrictData();
+    toggleUserFieldsOnLoad();
+    updateStepHeader(currentStep);
+    console.log("✅ Signup initialized successfully");
+  } catch (err) {
+    console.error("❌ Error during initialization:", err);
+    showToast("Error initializing signup form", "error");
+  }
 }
 
 // ====================== Step Navigation ======================
 function setupStepNavigation() {
+  console.log("Setting up step navigation...");
+
   $("#step1Next").click((e) => {
     e.preventDefault();
+    console.log("Step 1 Next clicked");
     const firstName = $("#firstName").val().trim();
     const lastName = $("#lastName").val().trim();
     const email = $("#email").val().trim();
 
     if (!firstName || !lastName || !email) {
+      console.warn("Step 1 validation failed");
       showToast("Please fill in all required fields", "warning");
       return;
     }
     goToStep(2);
   });
 
-  $("#step2Next").click((e) => { e.preventDefault(); goToStep(3); });
+  $("#step2Next").click((e) => {
+    e.preventDefault();
+    console.log("Step 2 Next clicked");
+    goToStep(3);
+  });
 
-  // Step 3: send OTP
   $("#step3Next").click(async (e) => {
     e.preventDefault();
+    console.log("Step 3 Next clicked");
     const contact = $("#verificationContact").val().trim();
+    const method = $('input[name="verificationMethod"]:checked').val();
+
     if (!contact) {
+      console.warn("No contact entered for OTP");
       showToast("Please enter your verification contact", "warning");
       return;
     }
 
     try {
+      console.log("Sending OTP to:", contact, "via:", method);
       const res = await fetch("/auth/send-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          contact, 
-          method: $('input[name="verificationMethod"]:checked').val() 
-        }),
+        body: JSON.stringify({ contact, method }),
       });
 
       const result = await res.json();
+      console.log("OTP send response:", result);
+
       if (res.ok && result.success) {
-        otpSessionId = result.sessionId || result.userId;
-        showToast("Verification code sent! Please check your email.", "success");
+        otpSessionId = result.sessionId;
+        otpVerified = false;
+        console.log("✅ OTP session created:", otpSessionId);
+        showToast("Verification code sent! Check your inbox.", "success");
         goToStep(4);
       } else {
+        console.error("❌ OTP send failed:", result);
         showToast(result.message || "Failed to send verification code", "error");
       }
     } catch (err) {
@@ -564,14 +585,13 @@ function setupStepNavigation() {
   $("#createAccountBtn").click(handleAccountCreation);
 }
 
-
-
 function goToStep(step) {
   currentStep = step;
   $(".form-step").removeClass("active");
   $(`#step${step}`).addClass("active");
   updateStepProgress(step);
   updateStepHeader(step);
+  console.log("Navigated to step", step);
 }
 
 function updateStepProgress(step) {
@@ -587,11 +607,12 @@ function updateStepProgress(step) {
   }
 }
 
-
+// ====================== Step Headers ======================
 function updateStepHeader(step) {
   const titles = {
     1: { title: "Personal Information", subtitle: "Tell us about yourself" },
-    2: selectedUserType === "farmer"
+    2:
+      selectedUserType === "farmer"
         ? { title: "Farm Details", subtitle: "Information about your farming" }
         : { title: "Professional Details", subtitle: "Your expertise and experience" },
     3: { title: "Verification Method", subtitle: "Choose how to verify your account" },
@@ -605,6 +626,7 @@ function updateStepHeader(step) {
 function setupUserTypeHandling() {
   $('input[name="signupUserType"]').change(function () {
     selectedUserType = $(this).val();
+    console.log("User type selected:", selectedUserType);
     toggleUserFields();
     updateStepHeader(currentStep);
   });
@@ -620,53 +642,60 @@ function toggleUserFields() {
   }
 }
 
-
-function toggleUserFieldsOnLoad() { toggleUserFields(); }
+function toggleUserFieldsOnLoad() {
+  toggleUserFields();
+}
 
 // ====================== Field Size ======================
 function setupFieldSizeRange() {
   $("#fieldSize").on("input change", function () {
     const value = $(this).val();
     $("#fieldSizeDisplay").text(`${value} Acre${value > 1 ? "s" : ""}`);
+    console.log("Field size selected:", value);
   });
 }
+
+
 
 function populateStates() {
   const $stateSelect = $("#state");
   $stateSelect.empty().append('<option value="">Select State</option>');
-  Object.entries(stateDistrictData).forEach(([key, value]) => {
-    $stateSelect.append(`<option value="${key}">${value.name}</option>`);
+
+  const stateKeys = Object.keys(stateDistrictData);
+  stateKeys.forEach((key) => {
+    $stateSelect.append(`<option value="${key}">${stateDistrictData[key].name}</option>`);
   });
+
+  console.log("States populated");
 }
 
 function populateDistricts(stateKey) {
   const $districtSelect = $("#district");
   $districtSelect.empty().append('<option value="">Select District</option>');
-  if (stateKey && stateDistrictData[stateKey]) {
+
+  if (stateDistrictData[stateKey]) {
     stateDistrictData[stateKey].districts.forEach((district) => {
-      $districtSelect.append(`<option value="${district.toLowerCase().replace(/\s+/g, "-")}">${district}</option>`);
+      $districtSelect.append(`<option value="${district}">${district}</option>`);
     });
+    console.log("Districts populated for state:", stateDistrictData[stateKey].name);
   }
 }
 
+
 function setupStateDistrictHandling() {
-  $("#state").change(function () { populateDistricts($(this).val()); });
+  populateStates(); // populate states on load
+  $("#state").change(function () {
+    populateDistricts($(this).val());
+  });
 }
-
-// ====================== State/District Handling ======================
-function setupStateDistrictHandling() {
-  $("#state").change(function () { populateDistricts($(this).val()); });
-}
-
-
-
 
 
 // ====================== Verification Method ======================
 function setupVerificationMethodHandling() {
-  $('input[name="verificationMethod"]').change(function () { updateVerificationInput($(this).val()); });
+  $('input[name="verificationMethod"]').change(function () {
+    updateVerificationInput($(this).val());
+  });
 }
-
 
 function updateVerificationInput(method) {
   const $input = $("#verificationContact");
@@ -678,15 +707,15 @@ function updateVerificationInput(method) {
     $input.attr("type", "tel").attr("placeholder", "Enter your phone number");
     $label.html('<i class="fas fa-phone"></i> Enter Phone Number');
   }
+  console.log("Verification method set to:", method);
 }
-// ====================== OTP Handling ======================
+
 // ====================== OTP Handling ======================
 function setupOTPInputs() {
   $(".otp-input").on("input", function () {
-    const $this = $(this);
-    const value = $this.val().replace(/\D/g, "");
-    $this.val(value);
-    if (value && $this.next(".otp-input").length) $this.next(".otp-input").focus();
+    const value = $(this).val().replace(/\D/g, "");
+    $(this).val(value);
+    if (value && $(this).next(".otp-input").length) $(this).next(".otp-input").focus();
   });
 
   $(".otp-input").on("keydown", function (e) {
@@ -694,91 +723,85 @@ function setupOTPInputs() {
       $(this).prev(".otp-input").focus();
     }
   });
-
-  $("#resendCode").click(async () => {
-    if (!otpSessionId) {
-      showToast("Please enter contact and request OTP first", "warning");
-      return;
-    }
-    try {
-      const res = await fetch("/auth/resend-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionId: otpSessionId }),
-      });
-      const result = await res.json();
-      if (res.ok && result.success) showToast("OTP resent successfully!", "success");
-      else showToast(result.message || "Failed to resend OTP", "error");
-    } catch (err) {
-      console.error("❌ Resend OTP error:", err);
-    }
-  });
 }
 
 // ====================== Account Creation ======================
 async function handleAccountCreation(e) {
   e.preventDefault();
+  if (signupInProgress) return;
+  signupInProgress = true;
 
-  // 1️⃣ Collect OTP from inputs
-  const otp = $(".otp-input").map((i, el) => $(el).val()).get().join("");
-  if (otp.length !== 6) {
-    showToast("Please enter the complete verification code", "warning");
-    return;
-  }
-  if (!$("#agreeTerms").prop("checked")) {
-    showToast("Please agree to the Terms", "warning");
-    return;
-  }
-
+  console.log("Starting account creation...");
   try {
-    // 2️⃣ Verify OTP with backend
-    const otpVerifyRes = await fetch("/auth/verify-otp", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        sessionId: otpSessionId, // pass the OTP session, not userId
-        otp
-      }),
-    });
+    const otp = $(".otp-input").map((i, el) => $(el).val()).get().join("");
+    console.log("Entered OTP:", otp);
 
-    const otpResult = await otpVerifyRes.json();
-
-    if (!otpResult.success) {
-      showToast(otpResult.message || "Invalid or expired OTP", "error");
-      return; // stop here if OTP invalid
+    if (otp.length !== 6) {
+      showToast("Please enter the complete verification code", "warning");
+      signupInProgress = false;
+      return;
     }
 
-    // 3️⃣ Collect full form data
-    const formData = collectFormData();
+    if (!$("#agreeTerms").prop("checked")) {
+      showToast("Please agree to the Terms", "warning");
+      signupInProgress = false;
+      return;
+    }
 
-    // 4️⃣ Send signup request
+    if (!otpSessionId) {
+      showToast("OTP session not found. Please resend OTP.", "error");
+      signupInProgress = false;
+      return;
+    }
+
+    // Step 1: Verify OTP
+    if (!otpVerified) {
+      console.log("Verifying OTP with sessionId:", otpSessionId);
+      const otpVerifyRes = await fetch("/auth/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId: otpSessionId, otp }),
+      });
+      const otpResult = await otpVerifyRes.json();
+      console.log("OTP verify response:", otpResult);
+
+      if (!otpResult.success) {
+        showToast(otpResult.message || "Invalid or expired OTP", "error");
+        signupInProgress = false;
+        return;
+      }
+      otpVerified = true;
+      showToast("OTP verified successfully!", "success");
+    }
+
+    // Step 2: Collect form data
+    const formData = collectFormData();
+    console.log("Collected formData:", formData);
+
+    // Step 3: Send signup request
     const signupRes = await fetch("/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
     });
+
     const signupResult = await signupRes.json();
+    console.log("Signup response:", signupResult);
 
     if (signupRes.ok && signupResult.success) {
-      // ✅ Optional: redirect if backend sent redirectUrl
-      if (otpResult.redirectUrl) {
-        window.location.href = otpResult.redirectUrl;
-      } else {
-        showSuccessModal();
-      }
+      showSuccessModal();
     } else {
       showToast(signupResult.message || "Signup failed", "error");
     }
-
   } catch (error) {
     console.error("❌ Signup error:", error);
     showToast("Unexpected error during signup", "error");
+  } finally {
+    signupInProgress = false;
   }
 }
 
-
-
-
+// ====================== Form Data ======================
 function collectFormData() {
   const crops = $('input[name="crops"]:checked').map((i, el) => $(el).val()).get();
 
@@ -800,10 +823,10 @@ function collectFormData() {
 
   if (selectedUserType === "farmer") {
     data.farm = {
-      state: $("#state").val(),
+      state: $("#state option:selected").text(),
       district: $("#district").val(),
       fieldSize: $("#fieldSize").val(),
-      crops: crops,
+      crops,
       farmingMethod: $('input[name="farmingMethod"]:checked').val(),
     };
   } else {
@@ -814,9 +837,9 @@ function collectFormData() {
       organization: $("#organization").val(),
     };
   }
+
   return data;
 }
-
 
 // ====================== Success Modal ======================
 function showSuccessModal() {
@@ -825,41 +848,30 @@ function showSuccessModal() {
       <div class="modal-content">
         <div class="success-icon"><i class="fas fa-check"></i></div>
         <h2>Welcome to AgriAI!</h2>
-        <p>Your account has been created successfully. Get ready to revolutionize your ${selectedUserType === "farmer" ? "farming" : "advisory"} experience!</p>
-        <button id="goDashboardBtn" class="btn-primary"><i class="fas fa-home me-2"></i>Go to Dashboard</button>
+        <p>Your account has been created successfully. Redirecting...</p>
       </div>
     </div>
   `);
   $("body").append(modal);
-  $("#goDashboardBtn").click(() => window.location.href = "/dashboard");
+  console.log("✅ Signup successful, redirecting...");
+  setTimeout(() => (window.location.href = "/dashboard"), 1500);
 }
 
-
-// ====================== Utility Functions ======================
-function togglePassword(inputId) {
-  const $input = $(`#${inputId}`);
-  const $toggle = $input.siblings(".password-toggle").find("i");
-  if ($input.attr("type") === "password") { 
-    $input.attr("type", "text"); 
-    $toggle.removeClass("fa-eye").addClass("fa-eye-slash"); 
-  } else { 
-    $input.attr("type", "password"); 
-    $toggle.removeClass("fa-eye-slash").addClass("fa-eye"); 
-  }
-}
-
+// ====================== Toast Utility ======================
 function showToast(message, type = "info") {
-  const icons = { success: "fa-check-circle", error: "fa-exclamation-circle", warning: "fa-exclamation-triangle", info: "fa-info-circle" };
-  const toast = $(`<div class="toast-notification toast-${type}">
-    <div><i class="fas ${icons[type]}"></i><span>${message}</span><button class="close-toast"><i class="fas fa-times"></i></button></div>
-  </div>`);
+  const icons = {
+    success: "fa-check-circle",
+    error: "fa-exclamation-circle",
+    warning: "fa-exclamation-triangle",
+    info: "fa-info-circle",
+  };
+  const toast = $(`
+    <div class="toast-notification toast-${type}">
+      <div><i class="fas ${icons[type]}"></i><span>${message}</span>
+      <button class="close-toast"><i class="fas fa-times"></i></button></div>
+    </div>
+  `);
   $("body").append(toast);
   toast.find(".close-toast").click(() => toast.remove());
   setTimeout(() => toast.fadeOut(300, () => toast.remove()), 5000);
 }
-
-// ====================== Global Assignments ======================
-window.setFieldSize = setFieldSize;
-window.togglePassword = togglePassword;
-
-console.log("🌱 AgriAI Signup JS Loaded Successfully");

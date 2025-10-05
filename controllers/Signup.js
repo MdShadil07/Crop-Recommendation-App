@@ -1,170 +1,126 @@
 const bcrypt = require('bcryptjs');
-const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const validator = require('validator');
+const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const OtpVerification = require('../models/Verification'); // new OTP model
-const TWILIO_ENABLED = !!(process.env.TWILIO_SID && process.env.TWILIO_TOKEN && process.env.TWILIO_FROM);
-let twilioClient = null;
 
-if (TWILIO_ENABLED) {
-  const twilio = require('twilio');
-  twilioClient = twilio(process.env.TWILIO_SID, process.env.TWILIO_TOKEN);
-}
+// JWT helper
+const generateToken = (userId) =>
+  jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
-// Helper to generate 6-digit OTP
+// Send auth cookie
+const sendAuthCookie = (res, token) => {
+  res.cookie("authToken", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production", // false for localhost
+    sameSite: "lax",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
+};
+
+// OTP helper
 const generateOtp = () => Math.floor(100000 + Math.random() * 900000);
 
+// ----------------- SIGNUP (Send OTP) -----------------
 exports.signup = async (req, res) => {
   try {
-    const { personal, password, confirmPassword, userType, farm, expert, marketingEmails, agreeTerms, verificationMethod } = req.body;
+    const { personal, userType, farm, expert, verificationMethod } = req.body;
+    if (!personal?.firstName || !personal?.lastName || !personal?.email)
+      return res.status(400).json({ success: false, message: 'Fill all required fields.' });
 
-    console.log("📥 Signup request received:", req.body);
+    const existingUser = await User.findOne({ email: personal.email.toLowerCase() });
+    if (existingUser) return res.status(400).json({ success: false, message: 'Email already registered.' });
 
-    // ----------------- BASIC VALIDATION -----------------
-    if (!personal?.firstName || !personal?.lastName || !personal?.email || !password || !confirmPassword) {
-      console.warn("⚠️ Missing required fields");
-      return res.status(400).json({ success: false, message: 'Please fill all required fields.' });
-    }
-
-    if (!agreeTerms) {
-      console.warn("⚠️ Terms not agreed");
-      return res.status(400).json({ success: false, message: 'You must agree to terms to continue.' });
-    }
-
-    if (!validator.isEmail(personal.email)) {
-      console.warn("⚠️ Invalid email:", personal.email);
-      return res.status(400).json({ success: false, message: 'Invalid email address.' });
-    }
-
-    if (password !== confirmPassword) {
-      console.warn("⚠️ Password mismatch");
-      return res.status(400).json({ success: false, message: 'Passwords do not match.' });
-    }
-
-    // ----------------- DUPLICATE CHECK -----------------
-    const existing = await User.findOne({
-      $or: [
-        { "personal.email": personal.email.toLowerCase() },
-        { "personal.phone": personal.phone }
-      ]
-    });
-    if (existing) {
-      console.warn("⚠️ Duplicate user found:", existing.personal.email);
-      return res.status(400).json({ success: false, message: 'Email or phone already registered.' });
-    }
-
-    // ----------------- ROLE-SPECIFIC DATA -----------------
-    let farmData = {}, expertData = {};
-
-    if (userType === 'farmer') {
-      if (!farm?.state || !farm?.district) {
-        return res.status(400).json({ success: false, message: 'Please provide farm location (state & district).' });
-      }
-
-      const cropsArr = Array.isArray(farm.crops)
-        ? farm.crops.map(c => String(c).trim()).filter(Boolean)
-        : farm.crops ? [String(farm.crops).trim()] : [];
-
-      if (!cropsArr.length) {
-        return res.status(400).json({ success: false, message: 'Please select at least one crop.' });
-      }
-
-      if (!farm.farmingMethod) {
-        return res.status(400).json({ success: false, message: 'Please select a farming method.' });
-      }
-
-      farmData = {
-        state: farm.state.trim(),
-        district: farm.district.trim(),
-        fieldSize: farm.fieldSize ? Number(farm.fieldSize) : undefined,
-        crops: cropsArr,
-        farmingMethod: farm.farmingMethod.trim()
-      };
-    } else if (userType === 'expert') {
-      if (!expert?.expertise || !expert?.experience || !expert?.qualification) {
-        return res.status(400).json({ success: false, message: 'Please fill expertise, experience, and qualification.' });
-      }
-
-      expertData = {
-        expertise: expert.expertise.trim(),
-        experience: expert.experience.trim(),
-        qualification: expert.qualification.trim(),
-        organization: expert.organization ? expert.organization.trim() : undefined
-      };
-    } else {
-      return res.status(400).json({ success: false, message: 'Invalid user type.' });
-    }
-
-    // ----------------- PASSWORD HASH -----------------
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // ----------------- TEMPORARY OTP -----------------
     const otp = generateOtp();
-    const otpExpires = new Date(Date.now() + 5 * 60 * 1000); // 5 mins
-
-    // Store OTP temporarily in DB
-    const otpRecord = await OtpVerification.create({
-      contact: verificationMethod === 'email' ? personal.email.toLowerCase() : personal.phone,
+    req.app.locals.otpSessions = req.app.locals.otpSessions || {};
+    const sessionId = Date.now().toString();
+    req.app.locals.otpSessions[sessionId] = {
+      personal,
+      userType,
+      farm,
+      expert,
       otp,
-      expiresAt: otpExpires
-    });
-    console.log("🔑 OTP stored:", otpRecord);
+      createdAt: Date.now(),
+    };
 
-    // ----------------- SEND OTP -----------------
-    if (verificationMethod === 'email') {
-      try {
-        const transporter = nodemailer.createTransport({
-          service: process.env.EMAIL_SERVICE || 'gmail',
-          auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
-        });
-
-        await transporter.sendMail({
-          from: `"AgriAI Support" <${process.env.EMAIL_USER}>`,
-          to: personal.email,
-          subject: 'Your AgriAI Verification OTP',
-          html: `<p>Your verification code is <strong>${otp}</strong>. It will expire in 5 minutes.</p>`
-        });
-        console.log("📧 OTP sent via email to:", personal.email);
-      } catch (emailErr) {
-        console.error("❌ Failed to send OTP email:", emailErr);
-        return res.status(500).json({ success: false, message: 'Failed to send OTP email.' });
-      }
-    } else if (verificationMethod === 'phone' && TWILIO_ENABLED) {
-      try {
-        await twilioClient.messages.create({
-          from: process.env.TWILIO_FROM,
-          to: personal.phone,
-          body: `Your AgriAI verification code is: ${otp}`
-        });
-        console.log("📱 OTP sent via SMS to:", personal.phone);
-      } catch (smsErr) {
-        console.error("❌ Failed to send OTP SMS:", smsErr);
-        return res.status(500).json({ success: false, message: 'Failed to send OTP SMS.' });
-      }
-    } else if (verificationMethod === 'phone') {
-      return res.status(500).json({ success: false, message: 'SMS verification not enabled. Configure Twilio.' });
+    // Send OTP
+    if (verificationMethod === "email") {
+      const transporter = nodemailer.createTransport({
+        service: process.env.EMAIL_SERVICE || 'gmail',
+        auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
+      });
+      await transporter.sendMail({
+        from: `"AgriAI Support" <${process.env.EMAIL_USER}>`,
+        to: personal.email,
+        subject: 'Your AgriAI Verification OTP',
+        html: `<p>Your OTP is <b>${otp}</b>. Expires in 5 min.</p>`
+      });
     }
 
-    // ----------------- RESPOND WITH OTP SENT -----------------
-    return res.status(200).json({
-      success: true,
-      message: 'OTP sent successfully. Verify it to complete account creation.',
-      verificationMethod,
-      tempUser: {
-        firstName: personal.firstName,
-        lastName: personal.lastName,
-        email: personal.email,
-        phone: personal.phone,
-        userType,
-        farmData,
-        expertData,
-        password: hashedPassword
-      }
-    });
+    res.status(200).json({ success: true, message: 'OTP sent', sessionId });
 
   } catch (err) {
-    console.error("❌ Signup error (catch):", err);
-    return res.status(500).json({ success: false, message: 'Registration failed. Please try again later.', error: err.message });
+    res.status(500).json({ success: false, message: 'Signup failed', error: err.message });
+  }
+};
+
+// ----------------- VERIFY OTP -----------------
+exports.verifyOtp = async (req, res) => {
+  try {
+    const { sessionId, otp, password, confirmPassword } = req.body;
+    const session = (req.app.locals.otpSessions || {})[sessionId];
+    if (!session) return res.status(400).json({ success: false, message: 'Invalid OTP session.' });
+
+    if (String(session.otp) !== String(otp))
+      return res.status(400).json({ success: false, message: 'Incorrect OTP.' });
+
+    if (!password || password !== confirmPassword)
+      return res.status(400).json({ success: false, message: 'Passwords do not match.' });
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create user
+    const user = await User.create({
+      firstName: session.personal.firstName.trim(),
+      lastName: session.personal.lastName.trim(),
+      email: session.personal.email.toLowerCase(),
+      phone: session.personal.phone?.trim(),
+      password: hashedPassword,
+      userType: session.userType,
+      farmDetails: session.userType === "farmer" ? session.farm : undefined,
+      expertDetails: session.userType === "expert" ? session.expert : undefined,
+      isVerified: true,
+    });
+
+    const token = generateToken(user._id);
+    sendAuthCookie(res, token);
+
+    delete req.app.locals.otpSessions[sessionId]; // cleanup
+
+    res.status(200).json({ success: true, message: 'Account created', token, redirectUrl: "/dashboard" });
+
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'OTP verification failed', error: err.message });
+  }
+};
+
+// ----------------- LOGIN -----------------
+exports.login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password)
+      return res.status(400).json({ success: false, message: 'Email and password required' });
+
+    const user = await User.findOne({ email: email.toLowerCase() }).select("+password");
+    if (!user || !(await bcrypt.compare(password, user.password)))
+      return res.status(401).json({ success: false, message: 'Invalid email or password' });
+
+    const token = generateToken(user._id);
+    sendAuthCookie(res, token);
+
+    res.status(200).json({ success: true, message: 'Login successful', token, redirectUrl: "/dashboard" });
+
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Login failed', error: err.message });
   }
 };

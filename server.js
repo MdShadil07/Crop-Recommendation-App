@@ -5,12 +5,14 @@ const exphbs = require("express-handlebars");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const helmet = require("helmet");
-const cors = require("cors");
 const rateLimit = require("express-rate-limit");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
+const User = require("./models/User");
 
-const { ensureAuthenticated } = require("./middleware/auth");
+const { ensureAuthenticatedJWT } = require("./middleware/auth");
 
-// Load env vars
+// Load environment variables
 dotenv.config();
 
 const app = express();
@@ -34,7 +36,7 @@ app.use(
         defaultSrc: ["'self'"],
         styleSrc: [
           "'self'",
-          "'unsafe-inline'", // ✅ allow inline + Bootstrap
+          "'unsafe-inline'",
           "https://fonts.googleapis.com",
           "https://cdnjs.cloudflare.com",
           "https://cdn.jsdelivr.net"
@@ -46,9 +48,9 @@ app.use(
         ],
         scriptSrc: [
           "'self'",
-          "'unsafe-inline'", // ✅ allow inline scripts
-          "https://code.jquery.com", // ✅ jQuery
-          "https://cdn.jsdelivr.net" // ✅ Bootstrap
+          "'unsafe-inline'",
+          "https://code.jquery.com",
+          "https://cdn.jsdelivr.net"
         ],
         imgSrc: ["'self'", "data:", "https:"],
         connectSrc: ["'self'"],
@@ -57,7 +59,7 @@ app.use(
   })
 );
 
-
+// ---------- Rate Limiting ----------
 const limiter = rateLimit({
   windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
   max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 1000,
@@ -74,6 +76,9 @@ app.use(limiter);
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
+// ---------- Cookie Parser ----------
+app.use(cookieParser());
+
 // ---------- Session ----------
 app.use(
   session({
@@ -84,7 +89,7 @@ app.use(
   })
 );
 
-// Flash message middleware
+// ---------- Flash Messages ----------
 app.use((req, res, next) => {
   res.locals.flash = req.session.flash || null;
   delete req.session.flash;
@@ -123,9 +128,18 @@ app.engine("hbs", hbs.engine);
 app.set("view engine", "hbs");
 app.set("views", path.join(__dirname, "views"));
 
-// ---------- Global User in Views ----------
-app.use((req, res, next) => {
-  res.locals.user = req.session?.user || null;
+// ---------- Global User in Views (JWT) ----------
+app.use(async (req, res, next) => {
+  try {
+    const token = req.cookies.authToken;
+    if (token) {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const user = await User.findById(decoded.id).select("-password");
+      if (user) res.locals.user = user;
+    }
+  } catch (err) {
+    console.error("Error decoding JWT in middleware:", err);
+  }
   next();
 });
 
@@ -138,7 +152,10 @@ app.use(express.static(path.join(__dirname, "public")));
 const pagesRouter = require("./route/pages");
 app.use("/", pagesRouter);
 
-// ---------- Health & Status Endpoints ----------
+app.use("/auth", require("./route/auth"));
+app.use("/soil", require("./route/soil"));
+
+// ---------- Health & Status ----------
 app.get("/api/health", (req, res) => {
   res.status(200).json({
     success: true,
@@ -162,15 +179,6 @@ app.get("/api/status", (req, res) => {
   });
 });
 
-
-
-app.use('/', require('./route/pages')); // General pages (e.g., login, signup)
-app.use('/auth', require('./route/auth'));
-// ---------- Protected Route Example ----------
-app.get("/dashboard", ensureAuthenticated, (req, res) => {
-  res.render("pages/dashboard", { user: req.session.user });
-});
-
 // ---------- Global Error Handler ----------
 app.use((err, req, res, next) => {
   console.error("Global error handler:", err);
@@ -182,7 +190,7 @@ app.use((err, req, res, next) => {
 });
 
 // ---------- Start Server ----------
-const PORT = process.env.PORT || 5004;
+const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, () => {
   console.log(`
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -197,7 +205,7 @@ const server = app.listen(PORT, () => {
 `);
 });
 
-// Graceful Shutdown
+// ---------- Graceful Shutdown ----------
 process.on("unhandledRejection", (err) => {
   console.error("Unhandled Rejection:", err);
   server.close(() => process.exit(1));
